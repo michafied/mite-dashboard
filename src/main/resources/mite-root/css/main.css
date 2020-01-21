@@ -1,0 +1,62 @@
+body {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+}
+
+label {
+  display: inline-block;
+  padding: 12px;
+  width: 15em;
+}
+
+.box {
+  border-radius: 25px;
+  background: #efefef;
+  padding: 20px;
+  width: 80em;
+}
+
+.error {
+  background: #ff495d;
+}
+
+.success {
+  background: #7be11b;
+}
+
+.inTime {
+  background: #7be11b;
+}
+
+.overTime {
+  background: #ff495d;
+}
+
+table {
+  width: 100%;
+}
+
+thead th {
+  position: sticky; top: 0;
+}
+
+td {
+  padding-top: 0em;
+  padding-right: 1em;
+  padding-bottom: 0em;
+  padding-left: 1em;
+}
+
+.myProgress {
+  border-radius: 5px;
+  padding: 0px;
+  width: 10em;
+  background-color: #aaaaaa;
+}
+
+.myBar {
+  border-radius: 5px;
+  padding: 0px;
+  width: 0em;
+  height: 10px;
+}

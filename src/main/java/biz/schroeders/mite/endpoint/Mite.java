@@ -1,0 +1,67 @@
+package biz.schroeders.mite.endpoint;
+
+import static biz.schroeders.mite.MiteServer.MITE_TOKEN_KEY;
+import static biz.schroeders.mite.MiteServer.MITE_TOKEN_MAP;
+import static biz.schroeders.mite.constants.MediaTypes.CONTENT_TYPE;
+import static biz.schroeders.mite.constants.MediaTypes.JSON_MEDIA;
+
+import biz.schroeders.mite.ApiError;
+import biz.schroeders.mite.constants.HttpCodes;
+import biz.schroeders.mite.request.Request;
+import biz.schroeders.mite.request.TokenRequest;
+import com.google.gson.Gson;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonObject;
+import io.vertx.reactivex.ext.web.Router;
+import io.vertx.reactivex.ext.web.RoutingContext;
+import io.vertx.reactivex.ext.web.common.template.TemplateEngine;
+import io.vertx.reactivex.ext.web.handler.StaticHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Mite {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Mite.class);
+    private static final Gson GSON = new Gson();
+    private static final Handler<RoutingContext> STATIC_RESOURCES = StaticHandler.create("mite-root")
+            .setAllowRootFileSystemAccess(false);
+    private final TemplateEngine engine;
+
+    public Mite(final Router router, final TemplateEngine engine, final JsonObject templateConfig) {
+        this.engine = engine;
+        router.get("/control.html")
+                .handler(ctx -> engine.rxRender(templateConfig, "templates/control.ftl")
+                        .subscribe(ctx.response()::end, err -> LOGGER.error("", err)));
+        router.get("/*")
+                .handler(STATIC_RESOURCES);
+        router.post("/token")
+                .consumes(JSON_MEDIA)
+                .handler(this::saveToken);
+    }
+
+    private void saveToken(final RoutingContext context) {
+        context.request()
+                .toObservable()
+                .map(buffer -> GSON.fromJson(buffer.toString(), TokenRequest.class))
+                .map(Request::validate)
+                .flatMapCompletable(token -> context.vertx()
+                        .sharedData()
+                        .<String, String>rxGetLocalAsyncMap(MITE_TOKEN_MAP)
+                        .flatMapCompletable(map -> map.rxPut(MITE_TOKEN_KEY, token.getToken())))
+                .subscribe(
+                        () -> {
+                            LOGGER.info("token saved");
+                            context.response().end();
+                        },
+                        err -> {
+                            LOGGER.error("could not save token", err);
+                            if (err instanceof ApiError) {
+                                context.response()
+                                        .setStatusCode(((ApiError) err).getHttpCode())
+                                        .putHeader(CONTENT_TYPE, JSON_MEDIA)
+                                        .end(err.getMessage());
+                            } else {
+                                context.response().setStatusCode(HttpCodes.INTERNAL_SERVER_ERROR).end();
+                            }
+                        });
+    }
+}
