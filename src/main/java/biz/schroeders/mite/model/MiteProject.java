@@ -23,7 +23,7 @@ public class MiteProject {
     }
 
     public Project toProject() {
-        return new Project(id, name, customerId, customerName, Duration.ofMinutes(budget));
+        return new Project(id, name, customerId, customerName, Duration.ofMinutes(budget), 0, 0);
     }
 
     public Integer getId() {

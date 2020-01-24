@@ -73,7 +73,7 @@ public class MiteServer extends io.vertx.reactivex.core.AbstractVerticle {
         final Router customers = Router.router(vertx);
         final Router times = Router.router(vertx);
 
-        router.mountSubRouter("/mite", mite)
+        router.mountSubRouter("/", mite)
                 .mountSubRouter("/projects", projects)
                 .mountSubRouter("/customers", customers)
                 .mountSubRouter("/times", times);
@@ -98,25 +98,25 @@ public class MiteServer extends io.vertx.reactivex.core.AbstractVerticle {
         final HttpServerRequest request = context.request();
         final String path = request.path();
         final String method = request.rawMethod();
-        LOGGER.debug("log: {} {}", method, path);
+        LOGGER.info("log: {} {}", method, path);
         context.next();
     }
 
     private void handleToken(final RoutingContext context, final boolean tokenAvailable) {
-        LOGGER.info("Token found: {}", tokenAvailable);
+        LOGGER.debug("Token found: {}", tokenAvailable);
         if (tokenAvailable) {
             context.next();
         } else {
             final HttpServerRequest request = context.request();
             final String path = request.path();
             final String method = request.rawMethod();
-            if (("POST".equals(method) && path.startsWith("/mite/token"))
-                    || ("GET".equals(method) && (path.matches("/mite/(?:token|css|js).*")))) {
+            if (("POST".equals(method) && path.startsWith("/token"))
+                    || ("GET".equals(method) && (path.matches("/(?:token|css|js).*")))) {
                 context.next();
             } else {
                 context.response()
                         .setStatusCode(HttpCodes.MOVED_TEMPORARILY)
-                        .putHeader("Location", "/mite/token.html")
+                        .putHeader("Location", "/token.html")
                         .end();
             }
         }

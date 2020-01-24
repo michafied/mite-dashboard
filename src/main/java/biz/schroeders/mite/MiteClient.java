@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 public class MiteClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(MiteClient.class);
     private static final Gson GSON = new Gson();
-    private static final String USER_AGENT = "mite-dashboard/v1.0";
+    private static final String USER_AGENT = "mite-team-dashboard/v1.1";
 
     private final Vertx vertx;
     private final WebClient webClient;
@@ -29,7 +29,9 @@ public class MiteClient {
     public MiteClient(final Vertx vertx, final WebClientOptions options, final Configuration config) {
         this.vertx = vertx;
         webClient = WebClient.create(vertx, options);
-        companyUserAgent = config.getCompany().concat(USER_AGENT);
+        companyUserAgent = config.getCompany().isEmpty()
+                ? USER_AGENT
+                : config.getCompany().concat(" - ").concat(USER_AGENT);
     }
 
     public <T> Single<T> get(final String endpoint, final Type type) {

@@ -24,6 +24,14 @@ label {
   background: #7be11b;
 }
 
+.vInTime {
+  background: #80bfff;
+}
+
+.vOverTime {
+  background: #ff495d;
+}
+
 .inTime {
   background: #7be11b;
 }
@@ -38,6 +46,15 @@ table {
 
 thead th {
   position: sticky; top: 0;
+  background: #efefef;
+}
+
+tr:nth-child(even){
+  background-color: #f2f2f2;
+}
+
+tr:hover {
+  background-color: #ddd;
 }
 
 td {

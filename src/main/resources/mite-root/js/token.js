@@ -17,14 +17,14 @@ function sendToken() {
 
   http(() => { input.innerHTML = "<h1>loading</h1>"; })
     .post(
-      "/mite/token",
+      "/token",
       {
         "token": token
       },
       response => {
         title.innerHTML = "Token saved";
         input.innerHTML = "";
-        window.location.href = "/mite/control.html";
+        window.location.href = "/dashboard.html";
       },
       response => {
         input.innerHTML = "<p class=\"error\">"+JSON.parse(response).error+"</p>";
