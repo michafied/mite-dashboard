@@ -3,6 +3,7 @@ package biz.schroeders.mite.endpoint;
 import static biz.schroeders.mite.MiteServer.MITE_TOKEN_KEY;
 import static biz.schroeders.mite.MiteServer.MITE_TOKEN_MAP;
 import static biz.schroeders.mite.constants.MediaTypes.CONTENT_TYPE;
+import static biz.schroeders.mite.constants.MediaTypes.HTML_MEDIA;
 import static biz.schroeders.mite.constants.MediaTypes.JSON_MEDIA;
 
 import biz.schroeders.mite.ApiError;
@@ -28,13 +29,13 @@ public class Mite {
     public Mite(final Router router, final TemplateEngine engine, final JsonObject templateConfig) {
         router.get("/dashboard")
                 .handler(ctx -> engine.rxRender(templateConfig, "templates/dashboard.ftl")
-                        .subscribe(ctx.response()::end, err -> LOGGER.error("", err)));
+                        .subscribe(ctx.response().putHeader(CONTENT_TYPE, HTML_MEDIA)::end, err -> LOGGER.error("", err)));
         router.get("/details")
                 .handler(ctx -> {
                     final String id = ctx.queryParam("id").isEmpty() ? "" : ctx.queryParam("id").get(0);
                     engine.rxRender(new JsonObject()
                             .put("id", id), "templates/project-details.ftl")
-                            .subscribe(ctx.response()::end, err -> LOGGER.error("", err));
+                            .subscribe(ctx.response().putHeader(CONTENT_TYPE, HTML_MEDIA)::end, err -> LOGGER.error("", err));
                 });
         router.get("/*")
                 .handler(STATIC_RESOURCES);

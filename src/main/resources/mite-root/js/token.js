@@ -17,7 +17,7 @@ function sendToken() {
 
   http(() => { input.innerHTML = "<h1>loading</h1>"; })
     .post(
-      "/token",
+      "./token",
       {
         "token": token
       },

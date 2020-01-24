@@ -116,7 +116,7 @@ public class MiteServer extends io.vertx.reactivex.core.AbstractVerticle {
             } else {
                 context.response()
                         .setStatusCode(HttpCodes.MOVED_TEMPORARILY)
-                        .putHeader("Location", "/token.html")
+                        .putHeader("Location", "./token.html")
                         .end();
             }
         }
