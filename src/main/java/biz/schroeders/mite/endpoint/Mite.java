@@ -26,9 +26,16 @@ public class Mite {
             .setAllowRootFileSystemAccess(false);
 
     public Mite(final Router router, final TemplateEngine engine, final JsonObject templateConfig) {
-        router.get("/dashboard.html")
+        router.get("/dashboard")
                 .handler(ctx -> engine.rxRender(templateConfig, "templates/dashboard.ftl")
                         .subscribe(ctx.response()::end, err -> LOGGER.error("", err)));
+        router.get("/details")
+                .handler(ctx -> {
+                    final String id = ctx.queryParam("id").isEmpty() ? "" : ctx.queryParam("id").get(0);
+                    engine.rxRender(new JsonObject()
+                            .put("id", id), "templates/project-details.ftl")
+                            .subscribe(ctx.response()::end, err -> LOGGER.error("", err));
+                });
         router.get("/*")
                 .handler(STATIC_RESOURCES);
         router.post("/token")

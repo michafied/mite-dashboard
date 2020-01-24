@@ -24,7 +24,7 @@ function sendToken() {
       response => {
         title.innerHTML = "Token saved";
         input.innerHTML = "";
-        window.location.href = "/dashboard.html";
+        window.location.href = "./dashboard";
       },
       response => {
         input.innerHTML = "<p class=\"error\">"+JSON.parse(response).error+"</p>";

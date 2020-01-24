@@ -32,7 +32,7 @@ public class Configuration implements Closeable {
             myPort = config.getInteger("myPort", 9090);
             miteApi = new MiteApi("mediametrics.mite.yo.lk", 443);
             templateEngine = FreeMarkerTemplateEngine.create(vertx)
-                    .setMaxCacheSize(10);
+                    .setMaxCacheSize(1000);
             templateConfig = config.getJsonObject(TEMPLATE_CONFIG_KEY, new JsonObject()
                     .put(PROJECT_SPEC_KEY, new JsonObject()
                             .put(NAME_MATCHES_KEY, ".+")));

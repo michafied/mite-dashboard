@@ -3,10 +3,10 @@
     <title>Hello Mite - team dashboard</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <meta charset="utf-8"/>
-    <script src="js/vue.js" type="text/javascript"></script>
-    <script src="js/http.js" type="text/javascript"></script>
-    <script src="js/mite.js" type="text/javascript"></script>
-    <link href="css/main.css" rel="stylesheet"/>
+    <script src="./js/vue.js" type="text/javascript"></script>
+    <script src="./js/http.js" type="text/javascript"></script>
+    <script src="./js/dashboard.js" type="text/javascript"></script>
+    <link href="./css/main.css" rel="stylesheet"/>
 </head>
 <body onload="setup()">
 
@@ -55,7 +55,7 @@
             </tr>
 
             <tr v-for="project in vProject.children">
-                <td align="left"> ⇱ {{ project.name }}</td>
+                <td align="left"> ⇱ <a :href="'./details?id=' + project.id">{{ project.name }}</a></td>
                 <td align="center">{{ project.budget }}</td>
                 <td align="center">{{ projectTimes[project.id] }}</td>
                 <td align="center">
