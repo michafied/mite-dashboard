@@ -15,17 +15,19 @@ public class Project implements Request<Project> {
     private final Integer customerId;
     private final String customerName;
     private final Long budget;
+    private final Boolean archived;
 
     private final Integer boundTo;
     private final Integer sorting;
 
     public Project(final Integer id, final String name, final Integer customerId, final String customerName,
-                   final Duration budget, final Integer boundTo, final Integer sorting) {
+                   final Duration budget, final Boolean archived, final Integer boundTo, final Integer sorting) {
         this.id = id;
         this.name = name;
         this.customerId = customerId;
         this.customerName = customerName;
-        this.budget = budget.toHours();
+        this.budget = Long.valueOf(budget.toHours());
+        this.archived = archived;
         this.boundTo = boundTo;
         this.sorting = sorting;
     }
@@ -35,7 +37,19 @@ public class Project implements Request<Project> {
     }
 
     public MiteProject toMite() {
-        return new MiteProject(id, name, customerId, customerName, Duration.ofHours(budget).toMinutes());
+        final Long nullableBudget;
+        if (budget != null) {
+            nullableBudget = Duration.ofHours(budget).toMinutes();
+        } else {
+            nullableBudget = null;
+        }
+
+        return new MiteProject(id,
+                name,
+                customerId,
+                customerName,
+                nullableBudget,
+                archived);
     }
 
     public Integer getId() {

@@ -73,6 +73,24 @@ public class MiteClient {
                 .ignoreElement();
     }
 
+    public <T> Completable patch(final String endpoint, final T data) {
+        return token()
+                .flatMap(token -> webClient.patch(endpoint)
+                        .putHeader("User-Agent", USER_AGENT)
+                        .putHeader("Accept", "*/*")
+                        .putHeader("Content-Type", "application/json")
+                        .putHeader("X-MiteApiKey", token)
+                        .rxSendBuffer(Buffer.buffer(GSON.toJson(data))))
+                .map(response -> {
+                    if (response.statusCode() != HttpCodes.OK) {
+                        LOGGER.error("not OK - {}", response.statusCode());
+                        throw new ApiError(response.statusMessage(), response.statusCode());
+                    }
+                    return "";
+                })
+                .ignoreElement();
+    }
+
     private Single<String> token() {
         return vertx.sharedData()
                 .<String, String>rxGetLocalAsyncMap(MITE_TOKEN_MAP)

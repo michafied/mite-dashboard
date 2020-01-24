@@ -49,6 +49,10 @@ public class Projects {
                 .consumes(JSON_MEDIA)
                 .produces(JSON_MEDIA)
                 .handler(this::getOne);
+        router.patch("/:projectId")
+                .consumes(JSON_MEDIA)
+                .produces(JSON_MEDIA)
+                .handler(this::archiver);
 
         this.miteClient = miteClient;
     }
@@ -99,6 +103,34 @@ public class Projects {
                 .map(MiteProject::toProject)
                 .map(GSON::toJson)
                 .subscribe(context.response().putHeader(CONTENT_TYPE, JSON_MEDIA)::end,
+                        e -> {
+                            if (e instanceof ApiError) {
+                                context.response()
+                                        .setStatusCode(((ApiError) e).getHttpCode())
+                                        .putHeader(CONTENT_TYPE, JSON_MEDIA)
+                                        .end(e.getMessage());
+                            } else {
+                                LOGGER.error("error", e);
+                                context.response()
+                                        .setStatusCode(HttpCodes.INTERNAL_SERVER_ERROR)
+                                        .end();
+                            }
+                        });
+    }
+
+    private void archiver(final RoutingContext context) {
+        final int projectId = Integer.parseInt(context.request().getParam("projectId"));
+        LOGGER.info("(un-)archive {}", projectId);
+        context.request().toObservable()
+                .firstOrError()
+                .map(Buffer::toString)
+                .map(str -> GSON.fromJson(str, Project.class))
+                .map(Project::toMite)
+                .map(ProjectWrapper::new)
+                .flatMapCompletable(project -> miteClient.<ProjectWrapper>patch("/projects/" + projectId + ".json", project))
+                .subscribe(() -> context.response()
+                                .setStatusCode(HttpCodes.CREATED)
+                                .end(),
                         e -> {
                             if (e instanceof ApiError) {
                                 context.response()

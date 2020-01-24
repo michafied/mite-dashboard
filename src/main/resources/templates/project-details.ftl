@@ -20,6 +20,7 @@
             <th>used</th>
             <th>ratio</th>
             <th></th>
+            <th>archive</th>
         </thead>
         <tbody>
             <tr>
@@ -35,6 +36,10 @@
                              v-bind:style="{width: Math.ceil(Math.min(1, projectTime / project.budget)*100)+'%'}"
                              v-bind:class="[((projectTime / project.budget) < 0.95) ? 'inTime' : 'overTime']"></div>
                     </div>
+                </td>
+                <td align="center">
+                  <a v-if="project.archived" class="archive" v-on:click.stop.prevent="unArchive" alt="to be workable">🗃 → ⏱</a>
+                  <a v-else class="archive" v-on:click.stop.prevent="archive" alt="to be archived">🏁 → 🗃</a>
                 </td>
             </tr>
         </tbody>

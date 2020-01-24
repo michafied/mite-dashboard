@@ -33,6 +33,30 @@ var projectDetails = new Vue({
           window.location.href = "./dashboard";
         }
       );
+    },
+    archive: function () {
+      var self = this;
+      http().patch(
+        "./projects/"+pId,
+        {
+          "archived": true
+        },
+        ignore => {
+          self.refresh();
+        }
+      );
+    },
+    unArchive: function () {
+      var self = this;
+      http().patch(
+        "./projects/"+pId,
+        {
+          "archived": false
+        },
+        ignore => {
+          self.refresh();
+        }
+      );
     }
   },
   created: function () {

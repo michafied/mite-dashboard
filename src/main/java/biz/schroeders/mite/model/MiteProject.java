@@ -8,22 +8,38 @@ public class MiteProject {
     private final Integer id;
     private final String name;
     @SerializedName("customer_id")
-    private final int customerId;
+    private final Integer customerId;
     @SerializedName("customer_name")
     private final String customerName;
-    private final long budget;
+    private final Long budget;
+    private final Boolean archived;
 
-    public MiteProject(final Integer id, final String name, final int customerId, final String customerName,
-                       final long budget) {
+    public MiteProject(final Integer id, final String name, final Integer customerId, final String customerName,
+                       final Long budget, final Boolean archived) {
         this.id = id;
         this.name = name;
         this.customerId = customerId;
         this.customerName = customerName;
         this.budget = budget;
+        this.archived = archived;
     }
 
     public Project toProject() {
-        return new Project(id, name, customerId, customerName, Duration.ofMinutes(budget), 0, 0);
+        final Duration nullableBudget;
+        if (budget != null) {
+            nullableBudget = Duration.ofMinutes(budget);
+        } else {
+            nullableBudget = null;
+        }
+
+        return new Project(id,
+                name,
+                customerId,
+                customerName,
+                nullableBudget,
+                archived,
+                0,
+                0);
     }
 
     public Integer getId() {

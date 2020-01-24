@@ -40,7 +40,7 @@
             <th></th>
         </thead>
         <tbody v-for="vProject in vProjects">
-            <tr>
+            <tr class="long">
             <td align="left"><b>{{ vProject.name }}</b></td>
             <td align="center">{{ vBudget(vProject) }}</td>
             <td align="center">{{ vTimeUsed(vProject) }}</td>
@@ -54,7 +54,7 @@
             </td>
             </tr>
 
-            <tr v-for="project in vProject.children">
+            <tr v-for="project in vProject.children" class="long">
                 <td align="left"> ⇱ <a :href="'./details?id=' + project.id">{{ project.name }}</a></td>
                 <td align="center">{{ project.budget }}</td>
                 <td align="center">{{ projectTimes[project.id] }}</td>
