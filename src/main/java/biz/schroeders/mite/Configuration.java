@@ -30,7 +30,7 @@ public class Configuration implements Closeable {
             final JsonObject config = vertx.getOrCreateContext().config();
             LOGGER.info("{}", config);
             myPort = config.getInteger("myPort", 9090);
-            miteApi = new MiteApi("sven-test.mite.yo.lk", 443);
+            miteApi = new MiteApi("mediametrics.mite.yo.lk", 443);
             templateEngine = FreeMarkerTemplateEngine.create(vertx)
                     .setMaxCacheSize(10);
             templateConfig = config.getJsonObject(TEMPLATE_CONFIG_KEY, new JsonObject()

@@ -1,7 +1,5 @@
-
-var store = { signal : 0 };
-
 function setup() {
+var store = { update : 0 };
 
 var createProject = new Vue({
   el: '#createProject',
@@ -12,13 +10,13 @@ var createProject = new Vue({
     customer: "",
     feedback: "",
     error: false,
-    signal: store
+    store: store
   },
   created: function () {
     var self = this;
     http()
       .get(
-        "../customers",
+        "./customers",
         response => {
           self.customers = JSON.parse(response);
         }
@@ -32,27 +30,26 @@ var createProject = new Vue({
           self.error = false;
         }, 3000);
 
-        http(() => { self.feedback = "loading"; })
-          .post(
-            "/projects",
-            {
-              "name": self.name,
-              "customerId": parseInt(self.customer, 10),
-              "budget": parseInt(self.budget, 10)
-            },
-            response => {
-              self.feedback = "done";
-              self.signal.signal++;
-            },
-            response => {
-              self.error = true;
-              self.feedback = JSON.parse(response).error;
-            },
-            xhr => {
-              self.error = true;
-              self.feedback = "error: "+xhr.status;
-            }
-          );
+        http(() => { self.feedback = "loading"; }).post(
+          "./projects"+window.location.search,
+          {
+            "name": self.name,
+            "customerId": parseInt(self.customer, 10),
+            "budget": parseInt(self.budget, 10)
+          },
+          response => {
+            self.feedback = "done";
+            self.store.update++;
+          },
+          response => {
+            self.error = true;
+            self.feedback = JSON.parse(response).error;
+          },
+          xhr => {
+            self.error = true;
+            self.feedback = "error: "+xhr.status;
+          }
+        );
       }
     }
 });
@@ -60,43 +57,49 @@ var createProject = new Vue({
 var projectList = new Vue({
   el: '#projectList',
   data: {
-    projects: [],
+    vProjects: [],
     projectTimes: {},
-    signal: store
+    store: store
   },
   methods: {
     loadTime: function (id) {
       if(id !== undefined) {
         var self = this;
-        http()
-          .get(
-            "../times/"+id,
-            response => {
-              Vue.set(self.projectTimes, id, JSON.parse(response).hours)
-            }
-          );
+        http().get(
+          "./times/"+id,
+          response => {
+            Vue.set(self.projectTimes, id, JSON.parse(response).hours)
+          }
+        );
       }
     },
     refresh: function () {
-        var self = this;
-        http()
-          .get(
-            "../projects",
-            response => {
-              var json = JSON.parse(response);
-              self.projects = json;
-              for(i=0; i< json.length; ++i){
-                self.loadTime(json[i].id);
-              }
+      var self = this;
+      http().get(
+        "./projects"+window.location.search,
+        response => {
+          var vProjects = JSON.parse(response);
+          self.vProjects = vProjects;
+          for(i=0; i < vProjects.length; ++i){
+            for(j=0; j < vProjects[i].children.length; ++j){
+              self.loadTime(vProjects[i].children[j].id);
             }
-          );
+          }
+        }
+      );
+    },
+    vBudget: function (vProject) {
+      return vProject.children.map(p => p.budget).reduce((acc, it) => acc += it, 0);
+    },
+    vTimeUsed: function (vProject) {
+      return vProject.children.map(p => this.projectTimes[p.id]).reduce((acc, it) => acc += it, 0);
     }
   },
   created: function () {
     this.refresh();
   },
   watch: {
-    signal: {
+    store: {
       deep: true,
       handler (val, oldVal) {
         console.log("watched:"+oldVal+" -> "+val);

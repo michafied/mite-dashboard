@@ -24,12 +24,10 @@ public class Mite {
     private static final Gson GSON = new Gson();
     private static final Handler<RoutingContext> STATIC_RESOURCES = StaticHandler.create("mite-root")
             .setAllowRootFileSystemAccess(false);
-    private final TemplateEngine engine;
 
     public Mite(final Router router, final TemplateEngine engine, final JsonObject templateConfig) {
-        this.engine = engine;
-        router.get("/control.html")
-                .handler(ctx -> engine.rxRender(templateConfig, "templates/control.ftl")
+        router.get("/dashboard.html")
+                .handler(ctx -> engine.rxRender(templateConfig, "templates/dashboard.ftl")
                         .subscribe(ctx.response()::end, err -> LOGGER.error("", err)));
         router.get("/*")
                 .handler(STATIC_RESOURCES);

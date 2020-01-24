@@ -1,6 +1,7 @@
 package biz.schroeders.mite.model;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import biz.schroeders.mite.ApiError;
@@ -15,13 +16,18 @@ public class Project implements Request<Project> {
     private final String customerName;
     private final Long budget;
 
+    private final Integer boundTo;
+    private final Integer sorting;
+
     public Project(final Integer id, final String name, final Integer customerId, final String customerName,
-                   final Duration budget) {
+                   final Duration budget, final Integer boundTo, final Integer sorting) {
         this.id = id;
         this.name = name;
         this.customerId = customerId;
         this.customerName = customerName;
         this.budget = budget.toHours();
+        this.boundTo = boundTo;
+        this.sorting = sorting;
     }
 
     public static void register(final Pattern projectNameMatcher) {
@@ -50,6 +56,14 @@ public class Project implements Request<Project> {
 
     public Long getBudget() {
         return budget;
+    }
+
+    public Optional<Integer> getBoundTo() {
+        return Optional.ofNullable(boundTo);
+    }
+
+    public Optional<Integer> getSorting() {
+        return Optional.ofNullable(sorting);
     }
 
     @Override
