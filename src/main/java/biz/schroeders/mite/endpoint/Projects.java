@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import biz.schroeders.mite.ApiError;
 import biz.schroeders.mite.MiteClient;
+import biz.schroeders.mite.VirtualProjectsStore;
 import biz.schroeders.mite.constants.HttpCodes;
 import biz.schroeders.mite.model.MiteProject;
 import biz.schroeders.mite.model.Project;
@@ -35,6 +36,7 @@ public class Projects {
     private static final String FILTER_KEY = "filter";
 
     private final MiteClient miteClient;
+    private final VirtualProjectsStore virtualProjectsStore = new VirtualProjectsStore();
 
     public Projects(final Router router, final MiteClient miteClient) {
         router.get("/")
@@ -63,17 +65,17 @@ public class Projects {
         final Set<String> filters = new HashSet<>(params);
 
         miteClient.<List<ProjectWrapper>>get("/projects.json", PROJECTS_TYPE)
-                .map(projectWrapper -> projectWrapper
+                .flattenAsObservable(projectWrapper -> projectWrapper
                         .stream()
                         .map(ProjectWrapper::getProject)
                         .map(MiteProject::toProject)
                         .filter(p -> filters.contains("empty") || p.getBudget() > 0)
                         .collect(Collectors.toList()))
-                //TODO (database)
-                .map(list -> list.stream().collect(Collectors.groupingBy(p -> p.getBoundTo().orElse(0))))
+                .map(project -> Project.newBuilder(project).withBoundTo(virtualProjectsStore.getBoundTo(project.getId())).build())
+                .toMultimap(p -> p.getBoundTo().orElse(0))
                 .flattenAsObservable(Map::entrySet)
                 .map(entry -> {
-                    VirtualProject.Builder builder = VirtualProject.newBuilder(entry.getKey(), "not assigned");
+                    VirtualProject.Builder builder = virtualProjectsStore.getVprojectBuilder(entry.getKey());
                     entry.getValue().forEach(builder::addProject);
                     return builder.build();
                 })
