@@ -4,16 +4,19 @@ var projectDetails = new Vue({
   el: '#projectDetails',
   data: {
     project: {},
-    projectTime: 0
+    projectTimes: [],
+    timeSum: 0
   },
   methods: {
     loadTime: function () {
       if(pId !== undefined) {
         var self = this;
         http().get(
-          "./times/"+pId,
+          "./times/"+pId+"?split",
           response => {
-            self.projectTime = JSON.parse(response).hours
+            var pt = JSON.parse(response);
+            self.projectTimes = pt;
+            self.timeSum = pt.map(t => t.hours).reduce((acc, it) => acc += it, 0);
           }
         );
       }

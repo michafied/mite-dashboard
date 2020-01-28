@@ -26,21 +26,39 @@
             <tr>
                 <td align="left">{{ project.name }}</td>
                 <td align="center">{{ project.budget }}</td>
-                <td align="center">{{ projectTime }}</td>
+                <td align="center">{{ timeSum }}</td>
                 <td align="center">
-                    {{ Math.ceil((projectTime / project.budget)*100) }}%
+                    {{ Math.ceil((timeSum / project.budget)*100) }}%
                 </td>
                 <td>
                     <div class="myProgress">
                         <div class="myBar"
-                             v-bind:style="{width: Math.ceil(Math.min(1, projectTime / project.budget)*100)+'%'}"
-                             v-bind:class="[((projectTime / project.budget) < 0.95) ? 'inTime' : 'overTime']"></div>
+                             v-bind:style="{width: Math.ceil(Math.min(1, timeSum / project.budget)*100)+'%'}"
+                             v-bind:class="[((timeSum / project.budget) < 0.95) ? 'inTime' : 'overTime']"></div>
                     </div>
                 </td>
                 <td align="center">
                   <a v-if="project.archived" class="archive" v-on:click.stop.prevent="unArchive" alt="to be workable">🗃 → ⏱</a>
                   <a v-else class="archive" v-on:click.stop.prevent="archive" alt="to be archived">🏁 → 🗃</a>
                 </td>
+            </tr>
+        </tbody>
+        <tbody v-for="time in projectTimes">
+            <tr>
+                <td align="left"> ⇱ {{ time.serviceName }}</td>
+                <td align="center">{{ project.budget }}</td>
+                <td align="center">{{ time.hours }}</td>
+                <td align="center">
+                    {{ Math.ceil((time.hours / project.budget)*100) }}%
+                </td>
+                <td>
+                    <div class="myProgress">
+                        <div class="myBar"
+                             v-bind:style="{width: Math.ceil(Math.min(1, time.hours / project.budget)*100)+'%'}"
+                             v-bind:class="[((time.hours / project.budget) < 0.95) ? 'inTime' : 'overTime']"></div>
+                    </div>
+                </td>
+                <td align="center"></td>
             </tr>
         </tbody>
     </table>
