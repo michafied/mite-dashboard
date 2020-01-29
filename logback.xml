@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="file-roller" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>./logs/mite-dashboard.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>./logs/%d{yyyy-MM-dd}-mite-dashboard.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{0}.%method\(%line\) %message%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="biz.schroeders" level="INFO"/>
+
+    <root level="INFO">
+        <appender-ref ref="file-roller"/>
+    </root>
+</configuration>

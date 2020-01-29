@@ -1,6 +1,7 @@
 package biz.schroeders.mite;
 
 import java.io.Closeable;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import biz.schroeders.mite.model.MiteApi;
@@ -23,6 +24,8 @@ public class Configuration implements Closeable {
     private final TemplateEngine templateEngine;
     private final JsonObject templateConfig;
     private final String company;
+    private final JsonObject jdbcConfig;
+    private final String token;
 
     public Configuration(final Vertx vertx) {
         LOGGER.debug("create config");
@@ -38,6 +41,10 @@ public class Configuration implements Closeable {
                     .put(PROJECT_SPEC_KEY, new JsonObject()
                             .put(NAME_MATCHES_KEY, ".+")));
 
+            jdbcConfig = config.getJsonObject("jdbcConfig", new JsonObject()
+                    .put("url", "jdbc:hsqldb:file:./db/mite-dashboard;shutdown=true;encoding=UTF-8;sql.syntax_mys=true")
+                    .put("driver_class", "org.hsqldb.jdbcDriver")
+                    .put("max_pool_size", 30));
 
             if (templateConfig.getJsonObject(PROJECT_SPEC_KEY) != null
                     && templateConfig.getJsonObject(PROJECT_SPEC_KEY).getString(NAME_MATCHES_KEY) != null) {
@@ -45,6 +52,8 @@ public class Configuration implements Closeable {
                         .getJsonObject(PROJECT_SPEC_KEY)
                         .getString(NAME_MATCHES_KEY)));
             }
+
+            token = config.getString("miteApiToken");
 
             company = config.getString("companyName", "");
         } catch (final Exception e) {
@@ -71,6 +80,14 @@ public class Configuration implements Closeable {
 
     public JsonObject getTemplateConfig() {
         return templateConfig;
+    }
+
+    public JsonObject getJdbcConfig() {
+        return jdbcConfig;
+    }
+
+    public Optional<String> getToken() {
+        return Optional.of(token);
     }
 
     @Override

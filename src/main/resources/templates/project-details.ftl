@@ -37,7 +37,7 @@
                              v-bind:class="[((timeSum / project.budget) < 0.95) ? 'inTime' : 'overTime']"></div>
                     </div>
                 </td>
-                <td align="center">
+                <td align="center" style="min-width: 7em;">
                   <a v-if="project.archived" class="archive" v-on:click.stop.prevent="unArchive" alt="to be workable">🗃 → ⏱</a>
                   <a v-else class="archive" v-on:click.stop.prevent="archive" alt="to be archived">🏁 → 🗃</a>
                 </td>
@@ -62,6 +62,12 @@
             </tr>
         </tbody>
     </table>
+    <select size="1em" v-on:change="assign($event)">
+        <option selected value="0">Assign to vProject</option>
+        <option v-bind:value="vProject.id" v-for="vProject in vProjects">
+            {{vProject.name}}
+        </option>
+    </select>
 </div>
 
 </body>

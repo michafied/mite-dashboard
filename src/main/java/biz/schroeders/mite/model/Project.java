@@ -32,8 +32,36 @@ public class Project implements Request<Project> {
         this.sorting = sorting;
     }
 
+    private Project(final Builder builder) {
+        id = builder.id;
+        name = builder.name;
+        customerId = builder.customerId;
+        customerName = builder.customerName;
+        budget = builder.budget;
+        archived = builder.archived;
+        boundTo = builder.boundTo;
+        sorting = builder.sorting;
+    }
+
     public static void register(final Pattern projectNameMatcher) {
         Project.projectNameMatcher = projectNameMatcher;
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    public static Builder newBuilder(final Project copy) {
+        final Builder builder = new Builder();
+        builder.id = copy.getId();
+        builder.name = copy.getName();
+        builder.customerId = copy.getCustomerId();
+        builder.customerName = copy.getCustomerName();
+        builder.budget = copy.getBudget();
+        builder.archived = copy.getArchived();
+        builder.boundTo = copy.getBoundTo().orElse(0);
+        builder.sorting = copy.getSorting().orElse(0);
+        return builder;
     }
 
     public MiteProject toMite() {
@@ -72,6 +100,10 @@ public class Project implements Request<Project> {
         return budget;
     }
 
+    public Boolean getArchived() {
+        return archived;
+    }
+
     public Optional<Integer> getBoundTo() {
         return Optional.ofNullable(boundTo);
     }
@@ -92,5 +124,63 @@ public class Project implements Request<Project> {
             throw new ApiError("Customer needs to be chosen.", HttpCodes.BAD_REQUEST);
         }
         return this;
+    }
+
+    public static final class Builder {
+        private Integer id;
+        private String name;
+        private Integer customerId;
+        private String customerName;
+        private Long budget;
+        private Boolean archived;
+        private Integer boundTo;
+        private Integer sorting;
+
+        private Builder() {
+        }
+
+        public Builder withId(final Integer val) {
+            id = val;
+            return this;
+        }
+
+        public Builder withName(final String val) {
+            name = val;
+            return this;
+        }
+
+        public Builder withCustomerId(final Integer val) {
+            customerId = val;
+            return this;
+        }
+
+        public Builder withCustomerName(final String val) {
+            customerName = val;
+            return this;
+        }
+
+        public Builder withBudget(final Long val) {
+            budget = val;
+            return this;
+        }
+
+        public Builder withArchived(final Boolean val) {
+            archived = val;
+            return this;
+        }
+
+        public Builder withBoundTo(final Integer val) {
+            boundTo = val;
+            return this;
+        }
+
+        public Builder withSorting(final Integer val) {
+            sorting = val;
+            return this;
+        }
+
+        public Project build() {
+            return new Project(this);
+        }
     }
 }

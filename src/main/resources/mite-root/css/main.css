@@ -12,8 +12,8 @@ label {
 .box {
   border-radius: 25px;
   background: #efefef;
-  padding: 20px;
-  width: 80em;
+  padding: 1%;
+  width: 80%;
 }
 
 .error {
