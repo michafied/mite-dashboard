@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "biz.schroeders.mite"
-version = "1.1"
+version = "1.2"
 
 application {
     mainClassName = "io.vertx.core.Launcher"
@@ -55,6 +55,7 @@ object Versions {
     const val rxJava = "2.2.4"
     const val gson = "2.8.4"
     const val freemarker = "2.3.29"
+    const val hsqldb = "2.3.2"
 
     const val junit = "4.12"
     const val mockito = "2.8.9"
@@ -69,6 +70,9 @@ dependencies {
     implementation("io.vertx:vertx-web-client:${Versions.vertx}")
     implementation("io.vertx:vertx-rx-java2:${Versions.vertx}")
     implementation("io.vertx:vertx-web-templ-freemarker:${Versions.vertx}")
+    implementation("io.vertx:vertx-jdbc-client:${Versions.vertx}")
+    implementation("io.vertx:vertx-sql-common:${Versions.vertx}")
+    implementation("org.hsqldb:hsqldb:${Versions.hsqldb}")
     implementation("io.reactivex.rxjava2:rxjava:${Versions.rxJava}")
     implementation("org.freemarker:freemarker:${Versions.freemarker}")
 

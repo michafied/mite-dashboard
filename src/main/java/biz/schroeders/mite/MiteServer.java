@@ -7,12 +7,14 @@ import biz.schroeders.mite.endpoint.Customers;
 import biz.schroeders.mite.endpoint.Mite;
 import biz.schroeders.mite.endpoint.Projects;
 import biz.schroeders.mite.endpoint.Times;
+import biz.schroeders.mite.endpoint.VirtualProjects;
 import io.reactivex.Completable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.vertx.core.Launcher;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.reactivex.core.RxHelper;
 import io.vertx.reactivex.core.http.HttpServerRequest;
+import io.vertx.reactivex.ext.jdbc.JDBCClient;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
 import org.slf4j.Logger;
@@ -23,6 +25,7 @@ public class MiteServer extends io.vertx.reactivex.core.AbstractVerticle {
     public static final String MITE_TOKEN_KEY = "mite-key";
     private static final Logger LOGGER = LoggerFactory.getLogger(MiteServer.class);
     private Configuration configuration;
+    private JDBCClient jdbcClient;
 
     public static void main(final String[] args) {
         final String[] augmentedArgs = new String[args.length + 2];
@@ -40,6 +43,13 @@ public class MiteServer extends io.vertx.reactivex.core.AbstractVerticle {
         LOGGER.info("rxStart");
 
         configuration = new Configuration(vertx);
+        jdbcClient = JDBCClient.createShared(vertx, configuration.getJdbcConfig());
+        configuration.getToken().ifPresent(
+                token -> vertx.sharedData()
+                        .rxGetLocalAsyncMap(MITE_TOKEN_MAP)
+                        .flatMapCompletable(map -> map.rxPut(MITE_TOKEN_KEY, token))
+                        .blockingAwait()
+        );
 
         RxJavaPlugins.setComputationSchedulerHandler(s -> RxHelper.scheduler(vertx));
         RxJavaPlugins.setIoSchedulerHandler(s -> RxHelper.blockingScheduler(vertx));
@@ -51,7 +61,7 @@ public class MiteServer extends io.vertx.reactivex.core.AbstractVerticle {
                 .setSsl(true)
                 .setDefaultHost(configuration.getMiteApi().getHost())
                 .setDefaultPort(configuration.getMiteApi().getPort())
-                .setLogActivity(LOGGER.isTraceEnabled())
+                .setLogActivity(false)
                 .setKeepAlive(true);
         final MiteClient miteClient = new MiteClient(vertx, options, configuration);
 
@@ -72,16 +82,19 @@ public class MiteServer extends io.vertx.reactivex.core.AbstractVerticle {
         final Router projects = Router.router(vertx);
         final Router customers = Router.router(vertx);
         final Router times = Router.router(vertx);
+        final Router vProjects = Router.router(vertx);
 
         router.mountSubRouter("/", mite)
                 .mountSubRouter("/projects", projects)
                 .mountSubRouter("/customers", customers)
-                .mountSubRouter("/times", times);
+                .mountSubRouter("/times", times)
+                .mountSubRouter("/vProjects", vProjects);
 
         new Mite(mite, configuration.getTemplateEngine(), configuration.getTemplateConfig());
-        new Projects(projects, miteClient);
+        new Projects(projects, miteClient, jdbcClient);
         new Customers(customers, miteClient);
         new Times(times, miteClient);
+        new VirtualProjects(vProjects, jdbcClient);
 
         return vertx.createHttpServer()
                 .requestHandler(router)
@@ -91,7 +104,8 @@ public class MiteServer extends io.vertx.reactivex.core.AbstractVerticle {
 
     @Override
     public Completable rxStop() {
-        return Completable.fromRunnable(() -> configuration.close());
+        return Completable.fromRunnable(() -> configuration.close())
+                .andThen(Completable.fromRunnable(jdbcClient::close));
     }
 
     private void log(final RoutingContext context) {

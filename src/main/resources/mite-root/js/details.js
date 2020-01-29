@@ -5,7 +5,8 @@ var projectDetails = new Vue({
   data: {
     project: {},
     projectTimes: [],
-    timeSum: 0
+    timeSum: 0,
+    vProjects: []
   },
   methods: {
     loadTime: function () {
@@ -36,6 +37,12 @@ var projectDetails = new Vue({
           window.location.href = "./dashboard";
         }
       );
+      http().get(
+        "./vProjects",
+        response => {
+          self.vProjects = JSON.parse(response);
+        }
+      )
     },
     archive: function () {
       var self = this;
@@ -55,6 +62,19 @@ var projectDetails = new Vue({
         "./projects/"+pId,
         {
           "archived": false
+        },
+        ignore => {
+          self.refresh();
+        }
+      );
+    },
+    assign: function(event) {
+      var self = this;
+      http().post(
+        "./vProjects/mapping",
+        {
+          "vId": parseInt(event.target.value, 10),
+          "pId": pId
         },
         ignore => {
           self.refresh();
