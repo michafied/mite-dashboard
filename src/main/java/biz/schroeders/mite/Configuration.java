@@ -53,7 +53,7 @@ public class Configuration implements Closeable {
                         .getString(NAME_MATCHES_KEY)));
             }
 
-            token = config.getString("miteApiToken");
+            token = config.getString("miteApiToken", null);
 
             company = config.getString("companyName", "");
         } catch (final Exception e) {
@@ -87,7 +87,7 @@ public class Configuration implements Closeable {
     }
 
     public Optional<String> getToken() {
-        return Optional.of(token);
+        return Optional.ofNullable(token);
     }
 
     @Override

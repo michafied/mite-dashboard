@@ -40,6 +40,7 @@ public class MiteServer extends io.vertx.reactivex.core.AbstractVerticle {
 
     @Override
     public Completable rxStart() {
+
         LOGGER.info("rxStart");
 
         configuration = new Configuration(vertx);
