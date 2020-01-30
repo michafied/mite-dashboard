@@ -26,7 +26,7 @@
     <p v-bind:class="[ error ? 'error' : 'success' ]">{{ feedback }}</p>
 </div>
 <br/>
-<div style="width: 80em">
+<div style="width: 80%">
     <hr style="width:50%">
 </div>
 <br/>
@@ -69,6 +69,7 @@
                     </div>
                 </td>
             </tr>
+            <tr height="5em"></tr>
         </tbody>
     </table>
 </div>

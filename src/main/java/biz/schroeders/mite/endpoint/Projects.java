@@ -4,6 +4,7 @@ import static biz.schroeders.mite.constants.MediaTypes.CONTENT_TYPE;
 import static biz.schroeders.mite.constants.MediaTypes.JSON_MEDIA;
 
 import java.lang.reflect.Type;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -86,6 +87,10 @@ public class Projects {
                             return builder.build();
                         }))
                 .collect(LinkedList<VirtualProject>::new, LinkedList<VirtualProject>::add)
+                .map(list -> {
+                    list.sort(Comparator.comparingInt(VirtualProject::getId).reversed());
+                    return list;
+                })
                 .map(GSON::toJson)
                 .subscribe(context.response().putHeader(CONTENT_TYPE, JSON_MEDIA)::end,
                         e -> {
