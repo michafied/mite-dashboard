@@ -34,6 +34,9 @@ public class VirtualProjects {
         router.post("/")
                 .consumes(JSON_MEDIA)
                 .handler(this::createVirtualProject);
+        router.get("/:vId")
+                .consumes(JSON_MEDIA)
+                .handler(this::getOneVirtualProject);
         router.delete("/:vId")
                 .consumes(JSON_MEDIA)
                 .handler(this::deleteVirtualProject);
@@ -58,6 +61,15 @@ public class VirtualProjects {
                 ? virtualProjectsService.getAllVirtualProjectsShallow()
                 : virtualProjectsService.getAllVirtualProjects(filters);
         vp.collect(LinkedList<VirtualProject>::new, LinkedList<VirtualProject>::add)
+                .map(GSON::toJson)
+                .subscribe(new JsonRequestEnder(context));
+    }
+
+    private void getOneVirtualProject(final RoutingContext context) {
+        final int vId = Integer.parseInt(context.request().getParam("vId"));
+        LOGGER.debug("getOneVirtualProject vId={}", vId);
+
+        virtualProjectsService.getOneVirtualProject(vId)
                 .map(GSON::toJson)
                 .subscribe(new JsonRequestEnder(context));
     }

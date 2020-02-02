@@ -37,6 +37,13 @@ public class Mite {
                             .put("id", id), "templates/project-details.ftl")
                             .subscribe(ctx.response().putHeader(CONTENT_TYPE, HTML_MEDIA)::end, err -> LOGGER.error("", err));
                 });
+        router.get("/vDetails")
+                .handler(ctx -> {
+                    final String id = ctx.queryParam("id").isEmpty() ? "" : ctx.queryParam("id").get(0);
+                    engine.rxRender(new JsonObject()
+                            .put("id", id), "templates/vproject-details.ftl")
+                            .subscribe(ctx.response().putHeader(CONTENT_TYPE, HTML_MEDIA)::end, err -> LOGGER.error("", err));
+                });
         router.get("/*")
                 .handler(STATIC_RESOURCES);
         router.post("/token")

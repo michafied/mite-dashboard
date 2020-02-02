@@ -50,6 +50,22 @@ public class DefaultVirtualProjectsService implements VirtualProjectsService {
     }
 
     @Override
+    public Single<VirtualProject> getOneVirtualProject(final int id) {
+        return virtualProjectsStore.getProjectsFor(id)
+                .flatMapSingle(pId -> projectService.getProject(pId)
+                        .map(project -> Project.newBuilder(project)
+                                .withBoundTo(id)
+                                .build()))
+                .collect(LinkedList<Project>::new, LinkedList<Project>::add)
+                .flatMap(projects -> virtualProjectsStore.getVprojectBuilder(id)
+                        .map(builder -> {
+                            projects.forEach(builder::addProject);
+                            return builder.build();
+                        }));
+
+    }
+
+    @Override
     public Completable createVirtualProject(final VirtualProject project) {
         return Single.just(project)
                 .flatMapCompletable(vp -> virtualProjectsStore.createVirtualProject(vp.getName()));

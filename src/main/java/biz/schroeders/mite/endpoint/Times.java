@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import biz.schroeders.mite.JsonRequestEnder;
-import biz.schroeders.mite.constants.HttpCodes;
 import biz.schroeders.mite.model.MiteTime;
 import biz.schroeders.mite.model.Time;
 import biz.schroeders.mite.model.TimeWrapper;
@@ -69,6 +68,6 @@ public class Times {
                 .map(entry -> new Time(entry.getKey(), Duration.ofMinutes(entry.getValue().stream().mapToLong(MiteTime::getMinutes).sum())))
                 .collect(LinkedList<Time>::new, LinkedList<Time>::add)
                 .map(GSON::toJson)
-                .subscribe(new JsonRequestEnder(HttpCodes.CREATED, context));
+                .subscribe(new JsonRequestEnder(context));
     }
 }
