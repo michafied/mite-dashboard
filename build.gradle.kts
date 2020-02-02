@@ -10,7 +10,7 @@ group = "biz.schroeders.mite"
 version = "1.2"
 
 application {
-    mainClassName = "io.vertx.core.Launcher"
+    mainClassName = "biz.schroeders.mite.Starter"
 }
 
 val mainVerticleName = "biz.schroeders.mite.MiteServer"
@@ -72,6 +72,7 @@ dependencies {
     implementation("io.vertx:vertx-web-templ-freemarker:${Versions.vertx}")
     implementation("io.vertx:vertx-jdbc-client:${Versions.vertx}")
     implementation("io.vertx:vertx-sql-common:${Versions.vertx}")
+    implementation("io.vertx:vertx-dropwizard-metrics:${Versions.vertx}")
     implementation("org.hsqldb:hsqldb:${Versions.hsqldb}")
     implementation("io.reactivex.rxjava2:rxjava:${Versions.rxJava}")
     implementation("org.freemarker:freemarker:${Versions.freemarker}")

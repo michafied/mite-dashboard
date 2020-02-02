@@ -1,7 +1,5 @@
 package biz.schroeders.mite;
 
-import java.util.Arrays;
-
 import biz.schroeders.mite.constants.HttpCodes;
 import biz.schroeders.mite.endpoint.Customers;
 import biz.schroeders.mite.endpoint.Mite;
@@ -9,11 +7,12 @@ import biz.schroeders.mite.endpoint.Projects;
 import biz.schroeders.mite.endpoint.Times;
 import biz.schroeders.mite.endpoint.VirtualProjects;
 import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.vertx.core.Launcher;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.reactivex.core.RxHelper;
 import io.vertx.reactivex.core.http.HttpServerRequest;
+import io.vertx.reactivex.ext.dropwizard.MetricsService;
 import io.vertx.reactivex.ext.jdbc.JDBCClient;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
@@ -27,20 +26,8 @@ public class MiteServer extends io.vertx.reactivex.core.AbstractVerticle {
     private Configuration configuration;
     private JDBCClient jdbcClient;
 
-    public static void main(final String[] args) {
-        final String[] augmentedArgs = new String[args.length + 2];
-        augmentedArgs[0] = "run";
-        augmentedArgs[1] = MiteServer.class.getCanonicalName();
-        for (int i = 0; i < args.length; ++i) {
-            augmentedArgs[i + 2] = args[i];
-        }
-        LOGGER.info("main {}", Arrays.asList(augmentedArgs));
-        Launcher.main(augmentedArgs);
-    }
-
     @Override
     public Completable rxStart() {
-
         LOGGER.info("rxStart");
 
         configuration = new Configuration(vertx);
@@ -96,10 +83,17 @@ public class MiteServer extends io.vertx.reactivex.core.AbstractVerticle {
         new Customers(customers, miteClient);
         new Times(times, miteClient);
         new VirtualProjects(vProjects, jdbcClient);
+        final MetricsService metricsService = MetricsService.create(vertx);
 
         return vertx.createHttpServer()
                 .requestHandler(router)
                 .rxListen(configuration.getMyPort())
+                .map(httpServer -> router.get("/metrics").handler(ctx ->
+                        Single.just(metricsService)
+                                .map(service -> metricsService.getMetricsSnapshot("vertx.http.servers"))
+                                .map(Object::toString)
+                                .subscribe(new JsonRequestEnder(ctx))
+                ))
                 .ignoreElement();
     }
 
