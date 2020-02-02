@@ -41,7 +41,7 @@
         </thead>
         <tbody v-for="vProject in vProjects">
             <tr class="long">
-            <td align="left"><b>{{ vProject.name }}</b></td>
+            <td align="left"><b><a :href="'./vDetails?id=' + vProject.id">{{ vProject.name }}</a></b></td>
             <td align="center">{{ vBudget(vProject) }}</td>
             <td align="center">{{ vTimeUsed(vProject) }}</td>
             <td align="center">{{ Math.ceil((vTimeUsed(vProject) / vBudget(vProject))*100) }}%</td>

@@ -5,7 +5,7 @@
     <meta charset="utf-8"/>
     <script src="./js/vue.js" type="text/javascript"></script>
     <script src="./js/http.js" type="text/javascript"></script>
-    <script src="./js/details.js" type="text/javascript"></script>
+    <script src="./js/project-details.js" type="text/javascript"></script>
     <link href="./css/main.css" rel="stylesheet"/>
 </head>
 <body onload="setup()">

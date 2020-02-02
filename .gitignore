@@ -24,3 +24,5 @@ db/
 hs_err_pid*
 
 test-config.json
+uber-config.json
+

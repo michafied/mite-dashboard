@@ -38,7 +38,7 @@ var projectDetails = new Vue({
         }
       );
       http().get(
-        "./vProjects",
+        "./vProjects?shallow",
         response => {
           self.vProjects = JSON.parse(response);
         }
