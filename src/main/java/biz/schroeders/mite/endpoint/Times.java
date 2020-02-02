@@ -1,6 +1,5 @@
 package biz.schroeders.mite.endpoint;
 
-import static biz.schroeders.mite.constants.MediaTypes.CONTENT_TYPE;
 import static biz.schroeders.mite.constants.MediaTypes.JSON_MEDIA;
 
 import java.lang.reflect.Type;
@@ -10,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import biz.schroeders.mite.ApiError;
+import biz.schroeders.mite.JsonRequestEnder;
 import biz.schroeders.mite.MiteClient;
 import biz.schroeders.mite.constants.HttpCodes;
 import biz.schroeders.mite.model.MiteTime;
@@ -56,20 +55,7 @@ public class Times {
                         .sum()))
                 .map(Time::new)
                 .map(GSON::toJson)
-                .subscribe(context.response().putHeader(CONTENT_TYPE, JSON_MEDIA)::end,
-                        e -> {
-                            if (e instanceof ApiError) {
-                                context.response()
-                                        .setStatusCode(((ApiError) e).getHttpCode())
-                                        .putHeader(CONTENT_TYPE, JSON_MEDIA)
-                                        .end(e.getMessage());
-                            } else {
-                                LOGGER.error("error", e);
-                                context.response()
-                                        .setStatusCode(HttpCodes.INTERNAL_SERVER_ERROR)
-                                        .end();
-                            }
-                        });
+                .subscribe(new JsonRequestEnder(context));
     }
 
     private void getSplitted(final RoutingContext context) {
@@ -83,19 +69,6 @@ public class Times {
                 .map(entry -> new Time(entry.getKey(), Duration.ofMinutes(entry.getValue().stream().mapToLong(MiteTime::getMinutes).sum())))
                 .collect(LinkedList<Time>::new, LinkedList<Time>::add)
                 .map(GSON::toJson)
-                .subscribe(context.response().putHeader(CONTENT_TYPE, JSON_MEDIA)::end,
-                        e -> {
-                            if (e instanceof ApiError) {
-                                context.response()
-                                        .setStatusCode(((ApiError) e).getHttpCode())
-                                        .putHeader(CONTENT_TYPE, JSON_MEDIA)
-                                        .end(e.getMessage());
-                            } else {
-                                LOGGER.error("error", e);
-                                context.response()
-                                        .setStatusCode(HttpCodes.INTERNAL_SERVER_ERROR)
-                                        .end();
-                            }
-                        });
+                .subscribe(new JsonRequestEnder(HttpCodes.CREATED, context));
     }
 }

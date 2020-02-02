@@ -1,6 +1,5 @@
 package biz.schroeders.mite.endpoint;
 
-import static biz.schroeders.mite.constants.MediaTypes.CONTENT_TYPE;
 import static biz.schroeders.mite.constants.MediaTypes.JSON_MEDIA;
 
 import java.lang.reflect.Type;
@@ -12,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import biz.schroeders.mite.ApiError;
+import biz.schroeders.mite.JsonRequestEnder;
 import biz.schroeders.mite.MiteClient;
 import biz.schroeders.mite.VirtualProjectsStore;
 import biz.schroeders.mite.constants.HttpCodes;
@@ -92,20 +91,7 @@ public class Projects {
                     return list;
                 })
                 .map(GSON::toJson)
-                .subscribe(context.response().putHeader(CONTENT_TYPE, JSON_MEDIA)::end,
-                        e -> {
-                            if (e instanceof ApiError) {
-                                context.response()
-                                        .setStatusCode(((ApiError) e).getHttpCode())
-                                        .putHeader(CONTENT_TYPE, JSON_MEDIA)
-                                        .end(e.getMessage());
-                            } else {
-                                LOGGER.error("", e);
-                                context.response()
-                                        .setStatusCode(HttpCodes.INTERNAL_SERVER_ERROR)
-                                        .end();
-                            }
-                        });
+                .subscribe(new JsonRequestEnder(context));
     }
 
     private void getOne(final RoutingContext context) {
@@ -115,20 +101,7 @@ public class Projects {
                 .map(ProjectWrapper::getProject)
                 .map(MiteProject::toProject)
                 .map(GSON::toJson)
-                .subscribe(context.response().putHeader(CONTENT_TYPE, JSON_MEDIA)::end,
-                        e -> {
-                            if (e instanceof ApiError) {
-                                context.response()
-                                        .setStatusCode(((ApiError) e).getHttpCode())
-                                        .putHeader(CONTENT_TYPE, JSON_MEDIA)
-                                        .end(e.getMessage());
-                            } else {
-                                LOGGER.error("error", e);
-                                context.response()
-                                        .setStatusCode(HttpCodes.INTERNAL_SERVER_ERROR)
-                                        .end();
-                            }
-                        });
+                .subscribe(new JsonRequestEnder(context));
     }
 
     private void archiver(final RoutingContext context) {
@@ -141,22 +114,7 @@ public class Projects {
                 .map(Project::toMite)
                 .map(ProjectWrapper::new)
                 .flatMapCompletable(project -> miteClient.<ProjectWrapper>patch("/projects/" + projectId + ".json", project))
-                .subscribe(() -> context.response()
-                                .setStatusCode(HttpCodes.CREATED)
-                                .end(),
-                        e -> {
-                            if (e instanceof ApiError) {
-                                context.response()
-                                        .setStatusCode(((ApiError) e).getHttpCode())
-                                        .putHeader(CONTENT_TYPE, JSON_MEDIA)
-                                        .end(e.getMessage());
-                            } else {
-                                LOGGER.error("error", e);
-                                context.response()
-                                        .setStatusCode(HttpCodes.INTERNAL_SERVER_ERROR)
-                                        .end();
-                            }
-                        });
+                .subscribe(new JsonRequestEnder(HttpCodes.CREATED, context));
     }
 
     private void create(final RoutingContext context) {
@@ -169,21 +127,6 @@ public class Projects {
                 .map(Project::toMite)
                 .map(ProjectWrapper::new)
                 .flatMapCompletable(project -> miteClient.<ProjectWrapper>post("/projects.json", project))
-                .subscribe(() -> context.response()
-                                .setStatusCode(HttpCodes.CREATED)
-                                .end(),
-                        e -> {
-                            if (e instanceof ApiError) {
-                                context.response()
-                                        .setStatusCode(((ApiError) e).getHttpCode())
-                                        .putHeader(CONTENT_TYPE, JSON_MEDIA)
-                                        .end(e.getMessage());
-                            } else {
-                                LOGGER.error("error", e);
-                                context.response()
-                                        .setStatusCode(HttpCodes.INTERNAL_SERVER_ERROR)
-                                        .end();
-                            }
-                        });
+                .subscribe(new JsonRequestEnder(HttpCodes.CREATED, context));
     }
 }

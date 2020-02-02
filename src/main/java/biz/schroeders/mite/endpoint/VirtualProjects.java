@@ -6,6 +6,7 @@ import static biz.schroeders.mite.constants.MediaTypes.JSON_MEDIA;
 import java.util.LinkedList;
 
 import biz.schroeders.mite.ApiError;
+import biz.schroeders.mite.JsonRequestEnder;
 import biz.schroeders.mite.VirtualProjectsStore;
 import biz.schroeders.mite.constants.HttpCodes;
 import biz.schroeders.mite.model.VirtualProject;
@@ -71,40 +72,14 @@ public class VirtualProjects {
                 .map(Buffer::toString)
                 .map(str -> GSON.fromJson(str, VirtualProject.class))
                 .flatMapCompletable(vp -> virtualProjectsStore.createVirtualProject(vp.getName()))
-                .subscribe(context.response().putHeader(CONTENT_TYPE, JSON_MEDIA)::end,
-                        e -> {
-                            if (e instanceof ApiError) {
-                                context.response()
-                                        .setStatusCode(((ApiError) e).getHttpCode())
-                                        .putHeader(CONTENT_TYPE, JSON_MEDIA)
-                                        .end(e.getMessage());
-                            } else {
-                                LOGGER.error("error", e);
-                                context.response()
-                                        .setStatusCode(HttpCodes.INTERNAL_SERVER_ERROR)
-                                        .end();
-                            }
-                        });
+                .subscribe(new JsonRequestEnder(context));
     }
 
     private void deleteVirtualProject(final RoutingContext context) {
         LOGGER.debug("deleteVirtualProject");
         final int vId = Integer.parseInt(context.request().getParam("vId"));
         virtualProjectsStore.deleteVirtualProject(vId)
-                .subscribe(context.response().putHeader(CONTENT_TYPE, JSON_MEDIA)::end,
-                        e -> {
-                            if (e instanceof ApiError) {
-                                context.response()
-                                        .setStatusCode(((ApiError) e).getHttpCode())
-                                        .putHeader(CONTENT_TYPE, JSON_MEDIA)
-                                        .end(e.getMessage());
-                            } else {
-                                LOGGER.error("error", e);
-                                context.response()
-                                        .setStatusCode(HttpCodes.INTERNAL_SERVER_ERROR)
-                                        .end();
-                            }
-                        });
+                .subscribe(new JsonRequestEnder(context));
     }
 
     private void createMapping(final RoutingContext context) {
@@ -114,20 +89,7 @@ public class VirtualProjects {
                 .map(Buffer::toString)
                 .map(str -> GSON.fromJson(str, Mapping.class))
                 .flatMapCompletable(m -> virtualProjectsStore.createMapping(m.getvId(), m.getpId()))
-                .subscribe(context.response().putHeader(CONTENT_TYPE, JSON_MEDIA)::end,
-                        e -> {
-                            if (e instanceof ApiError) {
-                                context.response()
-                                        .setStatusCode(((ApiError) e).getHttpCode())
-                                        .putHeader(CONTENT_TYPE, JSON_MEDIA)
-                                        .end(e.getMessage());
-                            } else {
-                                LOGGER.error("error", e);
-                                context.response()
-                                        .setStatusCode(HttpCodes.INTERNAL_SERVER_ERROR)
-                                        .end();
-                            }
-                        });
+                .subscribe(new JsonRequestEnder(context));
     }
 
     private void deleteMapping(final RoutingContext context) {
@@ -137,20 +99,7 @@ public class VirtualProjects {
                 .map(Buffer::toString)
                 .map(str -> GSON.fromJson(str, Mapping.class))
                 .flatMapCompletable(m -> virtualProjectsStore.deleteMapping(m.getvId(), m.getpId()))
-                .subscribe(context.response().putHeader(CONTENT_TYPE, JSON_MEDIA)::end,
-                        e -> {
-                            if (e instanceof ApiError) {
-                                context.response()
-                                        .setStatusCode(((ApiError) e).getHttpCode())
-                                        .putHeader(CONTENT_TYPE, JSON_MEDIA)
-                                        .end(e.getMessage());
-                            } else {
-                                LOGGER.error("error", e);
-                                context.response()
-                                        .setStatusCode(HttpCodes.INTERNAL_SERVER_ERROR)
-                                        .end();
-                            }
-                        });
+                .subscribe(new JsonRequestEnder(context));
     }
 
     private static class Mapping {

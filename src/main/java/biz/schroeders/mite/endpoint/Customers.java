@@ -1,24 +1,20 @@
 package biz.schroeders.mite.endpoint;
 
-import static biz.schroeders.mite.constants.MediaTypes.CONTENT_TYPE;
 import static biz.schroeders.mite.constants.MediaTypes.JSON_MEDIA;
 
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import biz.schroeders.mite.JsonRequestEnder;
+import biz.schroeders.mite.MiteClient;
+import biz.schroeders.mite.model.CustomerWrapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import biz.schroeders.mite.ApiError;
-import biz.schroeders.mite.MiteClient;
-import biz.schroeders.mite.constants.HttpCodes;
-import biz.schroeders.mite.model.CustomerWrapper;
-
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Customers {
     private static final Logger LOGGER = LoggerFactory.getLogger(Customers.class);
@@ -44,19 +40,6 @@ public class Customers {
                         .map(CustomerWrapper::getCustomer)
                         .collect(Collectors.toList()))
                 .map(GSON::toJson)
-                .subscribe(context.response().putHeader(CONTENT_TYPE, JSON_MEDIA)::end,
-                        e -> {
-                            if (e instanceof ApiError) {
-                                context.response()
-                                        .setStatusCode(((ApiError) e).getHttpCode())
-                                        .putHeader(CONTENT_TYPE, JSON_MEDIA)
-                                        .end(e.getMessage());
-                            } else {
-                                LOGGER.error("error", e);
-                                context.response()
-                                        .setStatusCode(HttpCodes.INTERNAL_SERVER_ERROR)
-                                        .end();
-                            }
-                        });
+                .subscribe(new JsonRequestEnder(context));
     }
 }
