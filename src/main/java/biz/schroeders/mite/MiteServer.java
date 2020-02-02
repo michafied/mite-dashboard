@@ -6,6 +6,12 @@ import biz.schroeders.mite.endpoint.Mite;
 import biz.schroeders.mite.endpoint.Projects;
 import biz.schroeders.mite.endpoint.Times;
 import biz.schroeders.mite.endpoint.VirtualProjects;
+import biz.schroeders.mite.service.DefaultProjectService;
+import biz.schroeders.mite.service.DefaultVirtualProjectsService;
+import biz.schroeders.mite.service.MiteClient;
+import biz.schroeders.mite.service.ProjectService;
+import biz.schroeders.mite.service.VirtualProjectsService;
+import biz.schroeders.mite.service.VirtualProjectsStore;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -78,11 +84,16 @@ public class MiteServer extends io.vertx.reactivex.core.AbstractVerticle {
                 .mountSubRouter("/times", times)
                 .mountSubRouter("/vProjects", vProjects);
 
+        final VirtualProjectsStore virtualProjectsStore = new VirtualProjectsStore(jdbcClient);
+        final ProjectService projectService = new DefaultProjectService(miteClient);
+        final VirtualProjectsService virtualProjectsService = new DefaultVirtualProjectsService(projectService,
+                virtualProjectsStore);
+
         new Mite(mite, configuration.getTemplateEngine(), configuration.getTemplateConfig());
-        new Projects(projects, miteClient, jdbcClient);
+        new Projects(projects, projectService);
         new Customers(customers, miteClient);
         new Times(times, miteClient);
-        new VirtualProjects(vProjects, jdbcClient);
+        new VirtualProjects(vProjects, virtualProjectsService);
         final MetricsService metricsService = MetricsService.create(vertx);
 
         return vertx.createHttpServer()

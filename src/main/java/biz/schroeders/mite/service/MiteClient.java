@@ -1,4 +1,4 @@
-package biz.schroeders.mite;
+package biz.schroeders.mite.service;
 
 import static biz.schroeders.mite.MiteServer.MITE_TOKEN_KEY;
 import static biz.schroeders.mite.MiteServer.MITE_TOKEN_MAP;
@@ -6,6 +6,8 @@ import static biz.schroeders.mite.MiteServer.MITE_TOKEN_MAP;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 
+import biz.schroeders.mite.ApiError;
+import biz.schroeders.mite.Configuration;
 import biz.schroeders.mite.constants.HttpCodes;
 import com.google.gson.Gson;
 import io.reactivex.Completable;

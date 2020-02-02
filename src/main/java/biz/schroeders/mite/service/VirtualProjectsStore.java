@@ -1,4 +1,4 @@
-package biz.schroeders.mite;
+package biz.schroeders.mite.service;
 
 import biz.schroeders.mite.model.VirtualProject;
 import io.reactivex.Completable;

@@ -10,11 +10,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import biz.schroeders.mite.JsonRequestEnder;
-import biz.schroeders.mite.MiteClient;
 import biz.schroeders.mite.constants.HttpCodes;
 import biz.schroeders.mite.model.MiteTime;
 import biz.schroeders.mite.model.Time;
 import biz.schroeders.mite.model.TimeWrapper;
+import biz.schroeders.mite.service.MiteClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.vertx.reactivex.ext.web.Router;

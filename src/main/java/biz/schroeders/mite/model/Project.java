@@ -64,19 +64,21 @@ public class Project implements Request<Project> {
         return builder;
     }
 
-    public MiteProject toMite() {
-        final Long nullableBudget;
-        if (budget != null) {
-            nullableBudget = Duration.ofHours(budget).toMinutes();
-        } else {
-            nullableBudget = null;
-        }
+    public MiteProject toArchivable() {
+        return new MiteProject(null,
+                null,
+                null,
+                null,
+                null,
+                archived);
+    }
 
+    public MiteProject toMite() {
         return new MiteProject(id,
                 name,
                 customerId,
                 customerName,
-                nullableBudget,
+                Duration.ofHours(budget).toMinutes(),
                 archived);
     }
 

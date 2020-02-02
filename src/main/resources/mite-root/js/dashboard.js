@@ -76,7 +76,7 @@ var projectList = new Vue({
     refresh: function () {
       var self = this;
       http().get(
-        "./projects"+window.location.search,
+        "./vProjects"+window.location.search,
         response => {
           var vProjects = JSON.parse(response);
           self.vProjects = vProjects;

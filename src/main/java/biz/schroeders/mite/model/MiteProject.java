@@ -25,18 +25,11 @@ public class MiteProject {
     }
 
     public Project toProject() {
-        final Duration nullableBudget;
-        if (budget != null) {
-            nullableBudget = Duration.ofMinutes(budget);
-        } else {
-            nullableBudget = null;
-        }
-
         return new Project(id,
                 name,
                 customerId,
                 customerName,
-                nullableBudget,
+                Duration.ofMinutes(budget),
                 archived,
                 0,
                 0);
