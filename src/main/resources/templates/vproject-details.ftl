@@ -28,7 +28,7 @@
             </th>
         </thead>
         <tbody v-for="project in vProject.children">
-            <tr>
+            <tr class="long">
                 <td align="left"> ⇱ {{ project.name }}</td>
                 <td align="center">{{ project.budget }}</td>
                 <td align="center">{{ pUsed(project) }}</td>
@@ -41,7 +41,7 @@
                     </div>
                 </td>
             </tr>
-            <tr v-for="time in project.times">
+            <tr class="long" v-for="time in project.times">
                 <td align="left">&nbsp;&nbsp;&nbsp;&nbsp;- {{ time.serviceName }}</td>
                 <td align="center">{{ project.budget }}</td>
                 <td align="center">{{ time.hours }}</td>

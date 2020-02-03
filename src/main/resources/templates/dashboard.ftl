@@ -1,6 +1,7 @@
 <html lang="en">
 <head>
     <title>Hello Mite - team dashboard</title>
+    <link rel="search" type="application/opensearchdescription+xml" title="mite-dashboard" href="./opensearch.xml"/>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <meta charset="utf-8"/>
     <script src="./js/vue.js" type="text/javascript"></script>
@@ -41,17 +42,17 @@
         </thead>
         <tbody v-for="vProject in vProjects">
             <tr class="long">
-            <td align="left"><b><a :href="'./vDetails?id=' + vProject.id">{{ vProject.name }}</a></b></td>
-            <td align="center">{{ vBudget(vProject) }}</td>
-            <td align="center">{{ vTimeUsed(vProject) }}</td>
-            <td align="center">{{ Math.ceil((vTimeUsed(vProject) / vBudget(vProject))*100) }}%</td>
-            <td>
-                <div class="myProgress">
-                     <div class="myBar"
-                         v-bind:style="{width: Math.ceil(Math.min(1, vTimeUsed(vProject) / vBudget(vProject))*100)+'%'}"
-                         v-bind:class="[((vTimeUsed(vProject) / vBudget(vProject)) < 0.95) ? 'vInTime' : 'vOverTime']"></div>
-                </div>
-            </td>
+                <td align="left"><b><a :href="'./vDetails?id=' + vProject.id">{{ vProject.name }}</a></b></td>
+                <td align="center">{{ vBudget(vProject) }}</td>
+                <td align="center">{{ vTimeUsed(vProject) }}</td>
+                <td align="center">{{ Math.ceil((vTimeUsed(vProject) / vBudget(vProject))*100) }}%</td>
+                <td>
+                    <div class="myProgress">
+                         <div class="myBar"
+                             v-bind:style="{width: Math.ceil(Math.min(1, vTimeUsed(vProject) / vBudget(vProject))*100)+'%'}"
+                             v-bind:class="[((vTimeUsed(vProject) / vBudget(vProject)) < 0.95) ? 'vInTime' : 'vOverTime']"></div>
+                    </div>
+                </td>
             </tr>
 
             <tr v-for="project in vProject.children" class="long">

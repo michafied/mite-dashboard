@@ -1,7 +1,9 @@
 package biz.schroeders.mite.service;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,5 +88,20 @@ public class DefaultVirtualProjectsService implements VirtualProjectsService {
     public Completable deleteMapping(final ProjectMapping mapping) {
         return Single.just(mapping)
                 .flatMapCompletable(m -> virtualProjectsStore.deleteMapping(m.getvId(), m.getpId()));
+    }
+
+    @Override
+    public Single<List<VirtualProject>> findProjectsByName(final String name) {
+        return projectService.findProjectsByName(name)
+                .map(project -> Project.newBuilder(project)
+                        .withBoundTo(-1)
+                        .build())
+                .collect(LinkedList<Project>::new, LinkedList<Project>::add)
+                .map(projects -> {
+                    final VirtualProject.Builder builder = VirtualProject.newBuilder(-1, "searchresults");
+                    projects.forEach(builder::addProject);
+                    return builder.build();
+                })
+                .map(Collections::singletonList);
     }
 }

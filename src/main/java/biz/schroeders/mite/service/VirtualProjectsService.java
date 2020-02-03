@@ -1,5 +1,6 @@
 package biz.schroeders.mite.service;
 
+import java.util.List;
 import java.util.Set;
 
 import biz.schroeders.mite.model.ProjectMapping;
@@ -23,4 +24,6 @@ public interface VirtualProjectsService {
     Completable createMapping(ProjectMapping mapping);
 
     Completable deleteMapping(ProjectMapping mapping);
+
+    Single<List<VirtualProject>> findProjectsByName(String name);
 }
