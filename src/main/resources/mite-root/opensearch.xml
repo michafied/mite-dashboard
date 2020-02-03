@@ -1,0 +1,7 @@
+<OpenSearchDescription xmlns:moz="http://www.mozilla.org/2006/browser/search/"
+                       xmlns="http://a9.com/-/spec/opensearch/1.1/">
+    <ShortName>mite-dashboard</ShortName>
+    <Description>Type parts of the project name you are looking for.</Description>
+    <InputEncoding>UTF-8</InputEncoding>
+    <Url type="text/html" template="./dashboard?q={searchTerms}"/>
+</OpenSearchDescription>

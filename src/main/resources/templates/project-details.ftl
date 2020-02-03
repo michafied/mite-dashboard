@@ -23,7 +23,7 @@
             <th>archive</th>
         </thead>
         <tbody>
-            <tr>
+            <tr class="long">
                 <td align="left">{{ project.name }}</td>
                 <td align="center">{{ project.budget }}</td>
                 <td align="center">{{ timeSum }}</td>
@@ -44,7 +44,7 @@
             </tr>
         </tbody>
         <tbody v-for="time in projectTimes">
-            <tr>
+            <tr class="long">
                 <td align="left"> ⇱ {{ time.serviceName }}</td>
                 <td align="center">{{ project.budget }}</td>
                 <td align="center">{{ time.hours }}</td>

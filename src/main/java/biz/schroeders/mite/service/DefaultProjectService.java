@@ -58,4 +58,18 @@ public class DefaultProjectService implements ProjectService {
                 .map(ProjectWrapper::new)
                 .flatMapCompletable(p -> miteClient.patch("/projects/" + id + ".json", p));
     }
+
+    @Override
+    public Observable<Project> findProjectsByName(final String name) {
+        return miteClient.<List<ProjectWrapper>>get("/projects.json?name=" + name, PROJECTS_TYPE)
+                .flattenAsObservable(projectWrapper -> projectWrapper
+                        .stream()
+                        .collect(Collectors.toList()))
+                .mergeWith(miteClient.<List<ProjectWrapper>>get("/projects/archived.json?name=" + name, PROJECTS_TYPE)
+                        .flattenAsObservable(projectWrapper -> projectWrapper
+                                .stream()
+                                .collect(Collectors.toList())))
+                .map(ProjectWrapper::getProject)
+                .map(MiteProject::toProject);
+    }
 }

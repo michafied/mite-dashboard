@@ -13,6 +13,7 @@ import biz.schroeders.mite.model.VirtualProject;
 import biz.schroeders.mite.service.VirtualProjectsService;
 import com.google.gson.Gson;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.vertx.reactivex.core.buffer.Buffer;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.RoutingContext;
@@ -23,6 +24,7 @@ public class VirtualProjects {
     private static final Logger LOGGER = LoggerFactory.getLogger(VirtualProjects.class);
     private static final String FILTER_KEY = "filter";
     private static final String SHALLOW_KEY = "shallow";
+    private static final String SEARCH_KEY = "q";
     private static final Gson GSON = new Gson();
 
     private final VirtualProjectsService virtualProjectsService;
@@ -51,17 +53,25 @@ public class VirtualProjects {
     }
 
     private void getAllVirtualProjects(final RoutingContext context) {
-        final List<String> params = context.queryParam(FILTER_KEY);
-        final Set<String> filters = new HashSet<>(params);
+        final List<String> filterParams = context.queryParam(FILTER_KEY);
+        final Set<String> filters = new HashSet<>(filterParams);
         final boolean shallow = !context.queryParam(SHALLOW_KEY).isEmpty();
+        final String searchQuery = context.queryParam(SEARCH_KEY).stream()
+                .findFirst()
+                .orElse("");
 
         LOGGER.debug("getAllVirtualProjects shallow = {}", shallow);
-
-        final Observable<VirtualProject> vp = shallow
-                ? virtualProjectsService.getAllVirtualProjectsShallow()
-                : virtualProjectsService.getAllVirtualProjects(filters);
-        vp.collect(LinkedList<VirtualProject>::new, LinkedList<VirtualProject>::add)
-                .map(GSON::toJson)
+        LOGGER.debug("getAllVirtualProjects search = {}", searchQuery);
+        final Single<List<VirtualProject>> vp;
+        if (searchQuery.isEmpty()) {
+            final Observable<VirtualProject> vps = shallow
+                    ? virtualProjectsService.getAllVirtualProjectsShallow()
+                    : virtualProjectsService.getAllVirtualProjects(filters);
+            vp = vps.collect(LinkedList<VirtualProject>::new, List<VirtualProject>::add);
+        } else {
+            vp = virtualProjectsService.findProjectsByName(searchQuery);
+        }
+        vp.map(GSON::toJson)
                 .subscribe(new JsonRequestEnder(context));
     }
 

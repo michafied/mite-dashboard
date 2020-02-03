@@ -17,5 +17,7 @@ public interface ProjectService {
 
     Completable updateArchiveState(int id, Project project);
 
+    Observable<Project> findProjectsByName(String name);
+
     // Completable updateProject(String projectJson);
 }
