@@ -56,7 +56,8 @@ public class MiteServer extends io.vertx.reactivex.core.AbstractVerticle {
                 .setDefaultHost(configuration.getMiteApi().getHost())
                 .setDefaultPort(configuration.getMiteApi().getPort())
                 .setLogActivity(false)
-                .setKeepAlive(true);
+                .setKeepAlive(true)
+                .setFollowRedirects(true);
         final MiteClient miteClient = new MiteClient(vertx, options, configuration);
 
         router.route("/*").handler(this::log);

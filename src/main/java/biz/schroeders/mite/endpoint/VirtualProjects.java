@@ -2,6 +2,7 @@ package biz.schroeders.mite.endpoint;
 
 import static biz.schroeders.mite.constants.MediaTypes.JSON_MEDIA;
 
+import java.net.URLDecoder;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +59,8 @@ public class VirtualProjects {
         final boolean shallow = !context.queryParam(SHALLOW_KEY).isEmpty();
         final String searchQuery = context.queryParam(SEARCH_KEY).stream()
                 .findFirst()
+                .map(URLDecoder::decode)
+                .map(query -> query.replaceAll("\"", ""))
                 .orElse("");
 
         LOGGER.debug("getAllVirtualProjects shallow = {}", shallow);

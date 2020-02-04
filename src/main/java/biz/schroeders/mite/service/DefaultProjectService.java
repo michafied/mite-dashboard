@@ -1,6 +1,7 @@
 package biz.schroeders.mite.service;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -61,11 +62,11 @@ public class DefaultProjectService implements ProjectService {
 
     @Override
     public Observable<Project> findProjectsByName(final String name) {
-        return miteClient.<List<ProjectWrapper>>get("/projects.json?name=" + name, PROJECTS_TYPE)
+        return miteClient.<List<ProjectWrapper>>get("/projects.json", Collections.singletonMap("name", name), PROJECTS_TYPE)
                 .flattenAsObservable(projectWrapper -> projectWrapper
                         .stream()
                         .collect(Collectors.toList()))
-                .mergeWith(miteClient.<List<ProjectWrapper>>get("/projects/archived.json?name=" + name, PROJECTS_TYPE)
+                .mergeWith(miteClient.<List<ProjectWrapper>>get("/projects/archived.json", Collections.singletonMap("name", name), PROJECTS_TYPE)
                         .flattenAsObservable(projectWrapper -> projectWrapper
                                 .stream()
                                 .collect(Collectors.toList())))
