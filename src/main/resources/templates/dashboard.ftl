@@ -28,6 +28,7 @@
 </div>
 <br/>
 <div style="width: 80%">
+    <center><img src="./images/agplv3-88x31.png"/></center>
     <hr style="width:50%">
 </div>
 <br/>
@@ -74,6 +75,8 @@
         </tbody>
     </table>
 </div>
-
+<div>
+    Copyright © 2020 Sven Schröder
+</div>
 </body>
 </html>

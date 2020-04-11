@@ -1,0 +1,66 @@
+:toc-placement!:
+:icons: font
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+
+ifdef::env-github[]
+:imagesdir: readme/images
+endif::[]
+
+ifndef::env-github[]
+:imagesdir: readme/images
+endif::[]
+
+= mite-dashboard
+
+This project has been created to be used as internal tool at ubermetrics technologies GmbH. With https://mite.yo.lk[mite] it is possible to track times for certain bugdet owners and projects. Unfortunately projects ca only be created by Administrators who will have access to all time entries from all users as well. The mite-dashboard takes an administrators token and makes it possible to for all users to create projects and see the sum of the times used by projects in a GDPR compliant way. As well each project has a project specific page with a stable link, so you can even share it. There is no user authentication / authorization built in, so you should set up a reverse proxy which will handel auth and TLS termination.
+
+== License
+
+Copyright © 2020 Sven Schröder image:agplv3-88x31.png[]
+
+AGPLv3 see COPYING for details
+
+== Usage
+
+. you need to have an admin account at https://mite.yo.lk[mite]
+. create an admin token
+. create an configuration file in json format
+. at the first start of the mite-dashboard you will be asked to insert that token (it is stored in memory)
+. now you can use the dashboard
+. you can have a look at mite-dashboard-test.sh to see how you could start the dashboard
+
+== configuration
+* the mite-dashboard is implemented with https://vertx.io/[Apache vert.x], so you can specify the configuration in the usual vert.x way
+* for testing you can specify the admin token in the configuration file but be strongly advised to not out the token in the config file
+* mite-dashboard uses SLF4J with a logback backend
+
+.config structure
+[source,json]
+----
+{
+  "myPort": 8080, <.>
+  "miteHost": "your-company.mite.yo.lk", <.>
+  "miteApiToken": "<YOUR-TOKEN>", <.>
+  "companyName": "your-company" <.>
+  "templateConfig": {
+    "projectSpec": {
+      "nameMatches": "YOUR_COMPANY_PROJECT_NAME_PATTERN:.+" <.>
+    }
+  },
+  "jdbcConfig": { <.>
+    "url": "jdbc-url",
+    "driver_class": "org.hsqldb.jdbcDriver",
+    "max_pool_size": 30
+  }
+}
+----
+<.> optionally specified port for the mite-dashboard, defaults to 9090
+<.> mandatory, you get it from mite while setting up your account
+<.> optional, for testing only
+<.> optional, defaults to ""
+<.> optional, defaults to ".+"
+<.> optional, defaults to in process hsqldb

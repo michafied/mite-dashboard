@@ -6,14 +6,14 @@ plugins {
     id("com.github.johnrengelman.shadow").version("4.0.3")
 }
 
-group = "biz.schroeders.mite"
-version = "1.2"
+group = "com.github.itssven.mite"
+version = "1.3"
 
 application {
-    mainClassName = "biz.schroeders.mite.Starter"
+    mainClassName = "com.github.itssven.mite.Starter"
 }
 
-val mainVerticleName = "biz.schroeders.mite.MiteServer"
+val mainVerticleName = "com.github.itssven.mite.MiteServer"
 val watchForChange = "src/**/*.java"
 val doOnChange = "$projectDir/gradlew classes"
 
