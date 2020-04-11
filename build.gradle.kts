@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "biz.schroeders.mite"
-version = "1.2"
+version = "1.3"
 
 application {
     mainClassName = "biz.schroeders.mite.Starter"
