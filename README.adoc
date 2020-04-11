@@ -45,7 +45,7 @@ AGPLv3 see COPYING for details
   "myPort": 8080, <.>
   "miteHost": "your-company.mite.yo.lk", <.>
   "miteApiToken": "<YOUR-TOKEN>", <.>
-  "companyName": "your-company" <.>
+  "companyName": "your-company", <.>
   "templateConfig": {
     "projectSpec": {
       "nameMatches": "YOUR_COMPANY_PROJECT_NAME_PATTERN:.+" <.>

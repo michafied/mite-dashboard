@@ -11,7 +11,7 @@
         </encoder>
     </appender>
 
-    <logger name="biz.schroeders" level="INFO"/>
+    <logger name="com.github.itssven" level="INFO"/>
 
     <root level="INFO">
         <appender-ref ref="file-roller"/>
