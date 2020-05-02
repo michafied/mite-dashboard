@@ -21,6 +21,9 @@ import java.time.Duration;
 
 import com.google.gson.annotations.SerializedName;
 
+import static com.github.itssven.mite.model.Project.TYPE_NORMAL;
+import static com.github.itssven.mite.model.Project.TYPE_RECURRING;
+
 public class MiteProject {
     private final Integer id;
     private final String name;
@@ -48,6 +51,7 @@ public class MiteProject {
                 customerName,
                 Duration.ofMinutes(budget),
                 archived,
+                budget==0 ? TYPE_RECURRING : TYPE_NORMAL,
                 0,
                 0);
     }

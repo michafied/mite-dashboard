@@ -14,15 +14,27 @@
 <div class="box" id="createProject">
     <label for="name">Name<br/>(needs to match ${projectSpec.nameMatches})</label>
     <input @keyup.enter="send" size="20em" type="text" v-model.trim="name"/><br/>
-    <label for="budget">Budget<br/>(in hours)</label>
-    <input @keyup.enter="send" size="20em" type="number" v-model.number="budget"/><br/>
-    <label for="customer">Customer</label>
-    <select name="customer" size="1em" v-model="customer">
-        <option disabled value="">Please select one</option>
-        <option v-bind:value="customer.id" v-for="customer in customers">
-            {{customer.name}}
-        </option>
+    <label for="type">Type</label>
+    <select name="type" v-model.trim="type">
+      <option value="normal">Normal project</option>
+      <option value="recurring">Recurring</option>
+      <option value="aggregator">Aggregator</option>
     </select><br/>
+    <div v-if='type=="normal"'>
+      <label for="budget">Budget<br/>(in hours)</label>
+      <input @keyup.enter="send" size="20em" type="number" v-model.number="budget"/><br/>
+    </div>
+    <div v-else ></div>
+    <div v-if='type!="aggregator"'>
+      <label for="customer">Customer</label>
+      <select name="customer" size="1em" v-model="customer">
+          <option disabled value="">Please select one</option>
+          <option v-bind:value="customer.id" v-for="customer in customers">
+              {{customer.name}}
+          </option>
+      </select><br/>
+    </div>
+    <div v-else ></div>
     <button v-on:click="send">create</button>
     <p v-bind:class="[ error ? 'error' : 'success' ]">{{ feedback }}</p>
 </div>

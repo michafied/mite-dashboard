@@ -10,7 +10,8 @@ var createProject = new Vue({
     customer: "",
     feedback: "",
     error: false,
-    store: store
+    store: store,
+    type: "normal"
   },
   created: function () {
     var self = this;
@@ -30,12 +31,18 @@ var createProject = new Vue({
           self.error = false;
         }, 3000);
 
+        var endpoint = "./projects"+window.location.search;
+        if(self.type === "aggregator") {
+          endpoint = "./vProjects"+window.location.search;
+        }
+
         http(() => { self.feedback = "loading"; }).post(
-          "./projects"+window.location.search,
+          endpoint,
           {
             "name": self.name,
             "customerId": parseInt(self.customer, 10),
-            "budget": parseInt(self.budget, 10)
+            "budget": parseInt(self.budget, 10),
+            "type": self.type
           },
           response => {
             self.feedback = "done";
