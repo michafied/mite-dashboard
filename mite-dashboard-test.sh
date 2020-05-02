@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-NAME=mite-dashboard-1.3
+NAME=mite-dashboard-1.4
 DEPLOYABLE_HOME=$(pwd)
 JAVA=/usr/bin/java
 RUNNABLE="${DEPLOYABLE_HOME}/build/libs/${NAME}.jar"

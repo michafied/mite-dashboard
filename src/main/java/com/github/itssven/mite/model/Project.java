@@ -26,6 +26,8 @@ import com.github.itssven.mite.constants.HttpCodes;
 import com.github.itssven.mite.request.Request;
 
 public class Project implements Request<Project> {
+    public static final String TYPE_NORMAL = "normal";
+    public static final String TYPE_RECURRING = "recurring";
     private static Pattern projectNameMatcher = Pattern.compile(".+");
     private final Integer id;
     private final String name;
@@ -33,18 +35,20 @@ public class Project implements Request<Project> {
     private final String customerName;
     private final Long budget;
     private final Boolean archived;
+    private final String type;
 
     private final Integer boundTo;
     private final Integer sorting;
 
     public Project(final Integer id, final String name, final Integer customerId, final String customerName,
-                   final Duration budget, final Boolean archived, final Integer boundTo, final Integer sorting) {
+                   final Duration budget, final Boolean archived, String type, final Integer boundTo, final Integer sorting) {
         this.id = id;
         this.name = name;
         this.customerId = customerId;
         this.customerName = customerName;
-        this.budget = Long.valueOf(budget.toHours());
+        this.budget = budget.toHours();
         this.archived = archived;
+        this.type = type;
         this.boundTo = boundTo;
         this.sorting = sorting;
     }
@@ -56,6 +60,7 @@ public class Project implements Request<Project> {
         customerName = builder.customerName;
         budget = builder.budget;
         archived = builder.archived;
+        type = builder.type;
         boundTo = builder.boundTo;
         sorting = builder.sorting;
     }
@@ -76,6 +81,7 @@ public class Project implements Request<Project> {
         builder.customerName = copy.getCustomerName();
         builder.budget = copy.getBudget();
         builder.archived = copy.getArchived();
+        builder.type = copy.getType();
         builder.boundTo = copy.getBoundTo().orElse(0);
         builder.sorting = copy.getSorting().orElse(0);
         return builder;
@@ -123,6 +129,10 @@ public class Project implements Request<Project> {
         return archived;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public Optional<Integer> getBoundTo() {
         return Optional.ofNullable(boundTo);
     }
@@ -133,7 +143,7 @@ public class Project implements Request<Project> {
 
     @Override
     public Project validate() {
-        if (budget == null || budget < 1) {
+        if (TYPE_NORMAL.equals(type) && (budget == null || budget < 1)) {
             throw new ApiError("Budget needs to be atleast 1h.", HttpCodes.BAD_REQUEST);
         }
         if (name == null || !projectNameMatcher.matcher(name).matches()) {
@@ -141,6 +151,9 @@ public class Project implements Request<Project> {
         }
         if (customerId == null || customerId < 0) {
             throw new ApiError("Customer needs to be chosen.", HttpCodes.BAD_REQUEST);
+        }
+        if(TYPE_RECURRING.equals(type)){
+            return newBuilder(this).withBudget(0L).build();
         }
         return this;
     }
@@ -152,6 +165,7 @@ public class Project implements Request<Project> {
         private String customerName;
         private Long budget;
         private Boolean archived;
+        private String type;
         private Integer boundTo;
         private Integer sorting;
 
@@ -185,6 +199,11 @@ public class Project implements Request<Project> {
 
         public Builder withArchived(final Boolean val) {
             archived = val;
+            return this;
+        }
+
+        public Builder withType(final String val) {
+            type = val;
             return this;
         }
 
