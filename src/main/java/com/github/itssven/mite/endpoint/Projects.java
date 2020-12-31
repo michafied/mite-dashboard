@@ -57,7 +57,7 @@ public class Projects {
         router.patch("/:projectId")
                 .consumes(MediaTypes.JSON_MEDIA)
                 .produces(MediaTypes.JSON_MEDIA)
-                .handler(this::archiver);
+                .handler(this::patch);
 
         this.projectService = projectService;
     }
@@ -69,7 +69,7 @@ public class Projects {
         final Set<String> filters = new HashSet<>(params);
 
         projectService.getFilteredActiveProjects(filters)
-                .collect(LinkedList<Project>::new, LinkedList<Project>::add)
+                .collect(LinkedList<Project>::new, List::add)
                 .map(GSON::toJson)
                 .subscribe(new JsonRequestEnder(context));
     }
@@ -83,15 +83,15 @@ public class Projects {
                 .subscribe(new JsonRequestEnder(context));
     }
 
-    private void archiver(final RoutingContext context) {
+    private void patch(final RoutingContext context) {
         final int projectId = Integer.parseInt(context.request().getParam("projectId"));
-        LOGGER.debug("(un-)archive {}", projectId);
+        LOGGER.debug("update {}", projectId);
 
         context.request().toObservable()
                 .firstOrError()
                 .map(Buffer::toString)
                 .map(str -> GSON.fromJson(str, Project.class))
-                .flatMapCompletable(json -> projectService.updateArchiveState(projectId, json))
+                .flatMapCompletable(json -> projectService.updateProject(projectId, json))
                 .subscribe(new JsonRequestEnder(HttpCodes.CREATED, context));
     }
 

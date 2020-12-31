@@ -21,7 +21,6 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.github.itssven.mite.model.MiteProject;
 import com.github.itssven.mite.model.Project;
@@ -45,9 +44,7 @@ public class DefaultProjectService implements ProjectService {
     @Override
     public Observable<Project> getFilteredActiveProjects(final Set<String> filters) {
         return miteClient.<List<ProjectWrapper>>get("/projects.json", PROJECTS_TYPE)
-                .flattenAsObservable(projectWrapper -> projectWrapper
-                        .stream()
-                        .collect(Collectors.toList()))
+                .flattenAsObservable(projectWrappers -> projectWrappers)
                 .map(ProjectWrapper::getProject)
                 .map(MiteProject::toProject)
                 .filter(p -> filters.contains("empty") || p.getBudget() > 0);
@@ -70,9 +67,9 @@ public class DefaultProjectService implements ProjectService {
     }
 
     @Override
-    public Completable updateArchiveState(final int id, final Project project) {
+    public Completable updateProject(final int id, final Project project) {
         return Single.just(project)
-                .map(Project::toArchivable)
+                .map(Project::toMitePatch)
                 .map(ProjectWrapper::new)
                 .flatMapCompletable(p -> miteClient.patch("/projects/" + id + ".json", p));
     }
@@ -80,13 +77,9 @@ public class DefaultProjectService implements ProjectService {
     @Override
     public Observable<Project> findProjectsByName(final String name) {
         return miteClient.<List<ProjectWrapper>>get("/projects.json", Collections.singletonMap("name", name), PROJECTS_TYPE)
-                .flattenAsObservable(projectWrapper -> projectWrapper
-                        .stream()
-                        .collect(Collectors.toList()))
+                .flattenAsObservable(projectWrappers -> projectWrappers)
                 .mergeWith(miteClient.<List<ProjectWrapper>>get("/projects/archived.json", Collections.singletonMap("name", name), PROJECTS_TYPE)
-                        .flattenAsObservable(projectWrapper -> projectWrapper
-                                .stream()
-                                .collect(Collectors.toList())))
+                        .flattenAsObservable(projectWrappers -> projectWrappers))
                 .map(ProjectWrapper::getProject)
                 .map(MiteProject::toProject);
     }

@@ -87,12 +87,12 @@ public class Project implements Request<Project> {
         return builder;
     }
 
-    public MiteProject toArchivable() {
+    public MiteProject toMitePatch() {
         return new MiteProject(null,
                 null,
                 null,
                 null,
-                null,
+                Duration.ofHours(budget).toMinutes(),
                 archived);
     }
 

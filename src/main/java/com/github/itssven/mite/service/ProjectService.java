@@ -32,9 +32,8 @@ public interface ProjectService {
 
     Completable createProject(Project project);
 
-    Completable updateArchiveState(int id, Project project);
+    Completable updateProject(int id, Project project);
 
     Observable<Project> findProjectsByName(String name);
 
-    // Completable updateProject(String projectJson);
 }
