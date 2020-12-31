@@ -68,6 +68,18 @@ var projectDetails = new Vue({
         }
       );
     },
+    updateBudget: function() {
+      var self = this;
+      http().patch(
+        "./projects/"+pId,
+        {
+          "budget": parseInt(self.budget, 10)
+        },
+        ignore => {
+          self.refresh();
+        }
+      );
+    },
     assign: function(event) {
       var self = this;
       http().post(

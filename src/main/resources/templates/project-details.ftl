@@ -38,6 +38,11 @@
                     </div>
                 </td>
                 <td align="center" style="min-width: 7em;">
+                    <label for="budget">Budget<br/>(in hours)</label>
+                    <input @keyup.enter="send" size="20em" type="number" v-model.number="budget"/>
+                    <button v-on:click="updateBudget">update budget</button>
+                </td>
+                <td align="center" style="min-width: 7em;">
                   <a v-if="project.archived" class="archive" v-on:click.stop.prevent="unArchive" alt="to be workable">🗃 → ⏱</a>
                   <a v-else class="archive" v-on:click.stop.prevent="archive" alt="to be archived">🏁 → 🗃</a>
                 </td>
@@ -58,6 +63,7 @@
                              v-bind:class="[((time.hours / project.budget) < 0.95) ? 'inTime' : 'overTime']"></div>
                     </div>
                 </td>
+                <td align="center"></td>
                 <td align="center"></td>
             </tr>
         </tbody>
