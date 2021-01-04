@@ -20,6 +20,7 @@
             <th>used</th>
             <th>ratio</th>
             <th></th>
+            <th>new budget</th>
             <th>archive</th>
         </thead>
         <tbody>
@@ -38,7 +39,6 @@
                     </div>
                 </td>
                 <td align="center" style="min-width: 7em;">
-                    <label for="budget">Budget<br/>(in hours)</label>
                     <input @keyup.enter="send" size="20em" type="number" v-model.number="budget"/>
                     <button v-on:click="updateBudget">update budget</button>
                 </td>
