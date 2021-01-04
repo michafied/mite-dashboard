@@ -20,6 +20,7 @@
             <th>used</th>
             <th>ratio</th>
             <th></th>
+            <th>new budget</th>
             <th>archive</th>
         </thead>
         <tbody>
@@ -36,6 +37,10 @@
                              v-bind:style="{width: Math.ceil(Math.min(1, timeSum / project.budget)*100)+'%'}"
                              v-bind:class="[((timeSum / project.budget) < 0.95) ? 'inTime' : 'overTime']"></div>
                     </div>
+                </td>
+                <td align="center" style="min-width: 7em;">
+                    <input @keyup.enter="send" size="20em" type="number" v-model.number="budget"/>
+                    <button v-on:click="updateBudget">update budget</button>
                 </td>
                 <td align="center" style="min-width: 7em;">
                   <a v-if="project.archived" class="archive" v-on:click.stop.prevent="unArchive" alt="to be workable">🗃 → ⏱</a>
@@ -58,6 +63,7 @@
                              v-bind:class="[((time.hours / project.budget) < 0.95) ? 'inTime' : 'overTime']"></div>
                     </div>
                 </td>
+                <td align="center"></td>
                 <td align="center"></td>
             </tr>
         </tbody>
