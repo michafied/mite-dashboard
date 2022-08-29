@@ -92,7 +92,9 @@ public class Project implements Request<Project> {
                 null,
                 null,
                 null,
-                Duration.ofHours(budget).toMinutes(),
+                Optional.ofNullable(budget)
+                        .map(hours -> Duration.ofHours(hours).toMinutes())
+                        .orElse(null),
                 archived);
     }
 

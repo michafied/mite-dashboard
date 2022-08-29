@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.github.itssven.mite"
-version = "1.5"
+version = "1.6"
 
 application {
     mainClassName = "com.github.itssven.mite.Starter"
